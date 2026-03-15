@@ -453,7 +453,7 @@ reverse-engineering-specs   → generate specs from existing code
 
 ```
 templates/
-├── skills/                    # 61 skill directories
+├── skills/                    # 64 skill directories
 │   ├── using-toolkit/SKILL.md
 │   ├── planning/SKILL.md
 │   ├── brainstorming/SKILL.md
@@ -485,8 +485,11 @@ templates/
 │   ├── spec-writing/SKILL.md           # NEW: JTBD specs
 │   ├── reverse-engineering-specs/SKILL.md  # NEW: Legacy specs
 │   ├── acceptance-testing/SKILL.md     # NEW: Backpressure
-│   └── llm-as-judge/SKILL.md          # NEW: Subjective quality
-├── agents/                    # 18 agent definitions
+│   ├── llm-as-judge/SKILL.md          # NEW: Subjective quality
+│   ├── laravel-specialist/SKILL.md    # NEW: Laravel development
+│   ├── php-specialist/SKILL.md        # NEW: Modern PHP 8.x
+│   └── laravel-boost/SKILL.md         # NEW: Laravel Boost optimization
+├── agents/                    # 20 agent definitions
 │   ├── planner.md
 │   ├── code-reviewer.md
 │   ├── prd-writer.md
@@ -495,8 +498,10 @@ templates/
 │   ├── quality-reviewer.md
 │   ├── loop-orchestrator.md            # NEW
 │   ├── spec-writer.md                  # NEW
-│   └── acceptance-judge.md             # NEW
-├── commands/                  # 29 slash commands
+│   ├── acceptance-judge.md             # NEW
+│   ├── laravel-developer.md           # NEW: Laravel specialist
+│   └── php-developer.md               # NEW: PHP specialist
+├── commands/                  # 31 slash commands
 │   ├── plan.md
 │   ├── brainstorm.md
 │   ├── execute.md
@@ -510,7 +515,9 @@ templates/
 │   ├── worktree.md
 │   ├── ralph.md                        # NEW
 │   ├── specs.md                        # NEW
-│   └── loop.md                         # NEW
+│   ├── loop.md                         # NEW
+│   ├── laravel.md                      # NEW: Laravel development
+│   └── php.md                          # NEW: PHP development
 ├── hooks/
 │   ├── hooks.json
 │   └── session-start

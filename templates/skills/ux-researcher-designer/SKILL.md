@@ -1,6 +1,10 @@
 ---
 name: ux-researcher-designer
-description: When the user needs user research methodologies, persona development, journey mapping, usability testing plans, or information architecture analysis.
+description: >
+  Use when the user needs user research methodologies, persona development, journey mapping,
+  usability testing plans, or information architecture analysis. Triggers: user says "user research",
+  "persona", "journey map", "usability test", "card sort", "heuristic evaluation", "information architecture",
+  "user interview", understanding user behavior.
 ---
 
 # UX Researcher & Designer
@@ -9,51 +13,53 @@ description: When the user needs user research methodologies, persona developmen
 
 Apply systematic UX research and design methods to understand users, validate assumptions, and create evidence-based designs. This skill covers the full research-to-design pipeline: discovery research, persona creation, journey mapping, information architecture, usability testing, and heuristic evaluation.
 
-## Process
+## Phase 1: Discovery Research
 
-### Phase 1: Discovery Research
 1. Define research objectives and questions
 2. Select appropriate research methods
 3. Recruit participants (5-8 per segment for qualitative)
 4. Conduct research sessions
 5. Synthesize findings using affinity mapping
 
-### Phase 2: Analysis & Modeling
-1. Create user personas from research data
-2. Map user journey for key scenarios
-3. Define information architecture
-4. Identify pain points and opportunities
-5. Prioritize using impact/effort matrix
+**STOP — Present research plan with objectives and methods for user approval.**
 
-### Phase 3: Design Validation
-1. Create testable prototypes (low or high fidelity)
-2. Plan usability testing sessions
-3. Conduct tests with 5+ participants
-4. Analyze results and iterate
-5. Document findings and recommendations
+### Research Method Selection Decision Table
 
-## Research Methods
+#### Generative (Discovery) Methods
 
-### Generative (Discovery) Methods
-| Method | When to Use | Participants | Duration |
-|---|---|---|---|
-| User Interviews | Understanding motivations, behaviors, pain points | 5-8 per segment | 45-60 min each |
-| Contextual Inquiry | Observing users in their natural environment | 4-6 | 1-2 hours each |
-| Diary Studies | Longitudinal behavior patterns | 10-15 | 1-4 weeks |
-| Surveys | Quantitative validation of qualitative findings | 100+ | 5-10 min |
-| Focus Groups | Exploring attitudes and preferences | 6-10 per group | 60-90 min |
+| Method | When to Use | Participants | Duration | Cost |
+|---|---|---|---|---|
+| User Interviews | Understanding motivations, behaviors, pain points | 5-8 per segment | 45-60 min each | Medium |
+| Contextual Inquiry | Observing users in their natural environment | 4-6 | 1-2 hours each | High |
+| Diary Studies | Longitudinal behavior patterns | 10-15 | 1-4 weeks | Medium |
+| Surveys | Quantitative validation of qualitative findings | 100+ | 5-10 min | Low |
+| Focus Groups | Exploring attitudes and preferences | 6-10 per group | 60-90 min | Medium |
 
-### Evaluative Methods
-| Method | When to Use | Participants | Duration |
-|---|---|---|---|
-| Usability Testing | Validating designs against tasks | 5-8 | 30-60 min each |
-| A/B Testing | Comparing two design variants | 1000+ per variant | 1-4 weeks |
-| Card Sorting | Organizing information architecture | 15-30 | 20-30 min |
-| Tree Testing | Validating navigation structure | 50+ | 10-15 min |
-| First Click Testing | Evaluating initial user instincts | 30+ | 5-10 min |
-| Heuristic Evaluation | Expert review without users | 3-5 evaluators | 1-2 hours |
+#### Evaluative Methods
+
+| Method | When to Use | Participants | Duration | Cost |
+|---|---|---|---|---|
+| Usability Testing | Validating designs against tasks | 5-8 | 30-60 min each | Medium |
+| A/B Testing | Comparing two design variants | 1000+ per variant | 1-4 weeks | Low |
+| Card Sorting | Organizing information architecture | 15-30 | 20-30 min | Low |
+| Tree Testing | Validating navigation structure | 50+ | 10-15 min | Low |
+| First Click Testing | Evaluating initial user instincts | 30+ | 5-10 min | Low |
+| Heuristic Evaluation | Expert review without users | 3-5 evaluators | 1-2 hours | Low |
+
+#### Method Selection Decision Table
+
+| Situation | Recommended Method | Why |
+|---|---|---|
+| No idea who users are | Interviews + contextual inquiry | Deep understanding needed |
+| Have assumptions to validate | Surveys + usability testing | Quantitative confirmation |
+| Redesigning navigation | Card sorting + tree testing | Structure-focused |
+| Evaluating existing product | Heuristic evaluation + usability test | Find problems fast |
+| Comparing two designs | A/B testing | Statistical comparison |
+| Limited budget/time | Heuristic evaluation | No participants needed |
+| Long-term behavior understanding | Diary study | Captures patterns over time |
 
 ### Interview Guide Template
+
 ```
 1. Introduction (5 min)
    - Thank participant, explain purpose
@@ -75,7 +81,17 @@ Apply systematic UX research and design methods to understand users, validate as
    - Thank and explain next steps
 ```
 
-## Persona Template
+## Phase 2: Analysis and Modeling
+
+1. Create user personas from research data
+2. Map user journey for key scenarios
+3. Define information architecture
+4. Identify pain points and opportunities
+5. Prioritize using impact/effort matrix
+
+**STOP — Present personas and journey map for review before design validation.**
+
+### Persona Template
 
 ```markdown
 # [Persona Name]
@@ -87,14 +103,14 @@ Apply systematic UX research and design methods to understand users, validate as
 - Usage frequency: [daily/weekly/monthly]
 
 ## Goals
-1. Primary goal: [what they're trying to achieve]
+1. Primary goal: [what they are trying to achieve]
 2. Secondary goal: [supporting objective]
 3. Tertiary goal: [nice-to-have]
 
 ## Pain Points
 1. [Frustration with current process]
 2. [Unmet need]
-3. [Workaround they've created]
+3. [Workaround they have created]
 
 ## Behaviors
 - [How they currently solve the problem]
@@ -106,19 +122,28 @@ Apply systematic UX research and design methods to understand users, validate as
 - "[Another representative quote]"
 
 ## Scenario
-[A paragraph describing a typical day/task where they'd use the product]
+[A paragraph describing a typical day/task where they would use the product]
 ```
 
-## Journey Map Structure
+### Persona Quality Decision Table
+
+| Check | Pass | Fail |
+|---|---|---|
+| Based on real research data | Quotes and behaviors from interviews | Invented or assumed behaviors |
+| Actionable for design | Specific goals and pain points | Vague "wants to be productive" |
+| Distinct from other personas | Different goals, behaviors, constraints | Overlapping with another persona |
+| Number of personas | 2-4 primary | More than 5 (too many to design for) |
+
+### Journey Map Structure
 
 ```
-Stages:     Awareness → Consideration → Onboarding → Usage → Advocacy
+Stages:     Awareness -> Consideration -> Onboarding -> Usage -> Advocacy
                 |              |             |          |          |
 Actions:   [What they do at each stage]
                 |              |             |          |          |
-Thoughts:  [What they're thinking]
+Thoughts:  [What they are thinking]
                 |              |             |          |          |
-Emotions:  [😤 😐 😊 mapped to each stage]
+Emotions:  [Frustration/neutral/delight mapped to each stage]
                 |              |             |          |          |
 Pain Points: [Friction and frustration points]
                 |              |             |          |          |
@@ -128,12 +153,13 @@ Touchpoints: [Channels and interfaces involved]
 ```
 
 ### Journey Map Elements
+
 - **Moments of Truth**: Critical points where users form lasting impressions
 - **Service Blueprints**: Front-stage actions mapped to back-stage processes
 - **Emotion Curve**: Visual line showing emotional highs and lows
 - **Gap Analysis**: Difference between current and desired experience
 
-## Heuristic Evaluation (Nielsen's 10)
+### Heuristic Evaluation (Nielsen's 10)
 
 | # | Heuristic | What to Look For |
 |---|---|---|
@@ -149,6 +175,7 @@ Touchpoints: [Channels and interfaces involved]
 | 10 | Help and documentation | Searchable, task-oriented, concise |
 
 ### Severity Rating Scale
+
 | Rating | Description | Action |
 |---|---|---|
 | 0 | Not a usability problem | No action |
@@ -157,37 +184,65 @@ Touchpoints: [Channels and interfaces involved]
 | 3 | Major problem | High priority, fix before launch |
 | 4 | Usability catastrophe | Must fix immediately |
 
-## A/B Testing Methodology
+## Phase 3: Design Validation
 
-### Process
-1. **Hypothesis**: "Changing [X] will [improve/decrease] [metric] because [reason]"
-2. **Sample size**: Calculate minimum sample (use power analysis, typically 95% confidence, 80% power)
-3. **Duration**: Run for at least 2 full business cycles (minimum 2 weeks)
-4. **Single variable**: Test one change at a time
-5. **Analysis**: Statistical significance check (p < 0.05)
+1. Create testable prototypes (low or high fidelity)
+2. Plan usability testing sessions
+3. Conduct tests with 5+ participants
+4. Analyze results and iterate
+5. Document findings and recommendations
 
-### Common Metrics
-- **Task success rate**: % of users completing the target task
-- **Time on task**: Duration to complete a specific action
-- **Error rate**: Number of mistakes per task
-- **System Usability Scale (SUS)**: Standardized questionnaire (68 = average)
-- **Net Promoter Score (NPS)**: Likelihood to recommend (0-10 scale)
-- **Customer Effort Score (CES)**: Ease of experience (1-7 scale)
+**STOP — Present usability test results and recommendations for review.**
 
-## Information Architecture
+### Prototype Fidelity Decision Table
 
-### Card Sorting Analysis
-- **Open sort**: Users create their own categories (discovery)
-- **Closed sort**: Users sort into predefined categories (validation)
-- **Hybrid sort**: Predefined categories with ability to add new ones
-- Analysis: Similarity matrix, dendrogram, category agreement
+| Situation | Fidelity | Tool | Why |
+|---|---|---|---|
+| Early concept validation | Low (paper/wireframe) | Balsamiq, paper | Fast iteration, low commitment |
+| Navigation testing | Medium (clickable) | Figma prototype | Test flow without visual polish |
+| Visual design validation | High (pixel-perfect) | Figma, coded prototype | Test actual look and feel |
+| Interaction validation | High (coded) | HTML/CSS/JS prototype | Test real interactions |
 
-### Navigation Patterns
-- **Global navigation**: Persistent across all pages
-- **Local navigation**: Within a section
-- **Contextual navigation**: Related content links
-- **Utility navigation**: Settings, account, help
-- **Breadcrumbs**: Location within hierarchy
+### A/B Testing Methodology
+
+| Step | Details |
+|---|---|
+| Hypothesis | "Changing [X] will [improve/decrease] [metric] because [reason]" |
+| Sample size | Power analysis (95% confidence, 80% power) |
+| Duration | Minimum 2 full business cycles (2+ weeks) |
+| Variable control | Test one change at a time |
+| Analysis | Statistical significance (p < 0.05) |
+
+### Common UX Metrics
+
+| Metric | What It Measures | Benchmark |
+|---|---|---|
+| Task success rate | % completing target task | > 78% (acceptable) |
+| Time on task | Duration to complete action | Varies by task |
+| Error rate | Mistakes per task | < 10% |
+| System Usability Scale (SUS) | Overall usability score | 68 = average |
+| Net Promoter Score (NPS) | Likelihood to recommend | > 0 = good, > 50 = excellent |
+| Customer Effort Score (CES) | Ease of experience | > 5/7 |
+
+### Information Architecture
+
+#### Card Sort Analysis Decision Table
+
+| Sort Type | When to Use | Analysis Method |
+|---|---|---|
+| Open sort | Discovery — users create categories | Similarity matrix, dendrogram |
+| Closed sort | Validation — sort into predefined categories | Category agreement percentage |
+| Hybrid sort | Both — predefined with ability to add new | Combined analysis |
+
+#### Navigation Patterns
+
+| Pattern | Use Case |
+|---|---|
+| Global navigation | Persistent across all pages |
+| Local navigation | Within a section |
+| Contextual navigation | Related content links |
+| Utility navigation | Settings, account, help |
+| Breadcrumbs | Location within hierarchy |
 
 ## Deliverables Checklist
 
@@ -201,16 +256,30 @@ Touchpoints: [Channels and interfaces involved]
 - [ ] Usability test report with severity ratings
 - [ ] Prioritized recommendations with evidence
 
-## Anti-Patterns
+## Anti-Patterns / Common Mistakes
 
-- Designing based on assumptions without user research
-- Testing with colleagues instead of real users
-- Asking users what they want (observe what they do instead)
-- Confirmation bias: seeking evidence that supports existing beliefs
-- Too many personas (keep to 2-4 primary)
-- Skipping the synthesis step (going straight from interviews to design)
-- Running A/B tests without sufficient sample size
+| Anti-Pattern | Why It Is Wrong | What to Do Instead |
+|---|---|---|
+| Designing without research | Assumptions lead to wrong designs | Start with discovery research |
+| Testing with colleagues | Biased, know too much about product | Recruit external participants |
+| Asking users what they want | Users cannot predict behavior | Observe what they do instead |
+| Confirmation bias | Only seeing what supports beliefs | Use structured analysis, multiple evaluators |
+| Too many personas (5+) | Cannot design for everyone | Keep to 2-4 primary personas |
+| Skipping synthesis | Raw data is not insights | Always do affinity mapping |
+| Underpowered A/B tests | Results are meaningless noise | Calculate sample size before starting |
+| Presenting findings without recommendations | Research without action is wasted | Always include prioritized next steps |
+
+## Integration Points
+
+| Skill | Integration |
+|---|---|
+| `ui-ux-pro-max` | UX guidelines and design patterns |
+| `mobile-design` | Mobile usability testing patterns |
+| `planning` | Research plan is part of the implementation plan |
+| `spec-writing` | User research informs JTBD specifications |
+| `prd-generation` | Personas and journey maps feed into PRDs |
+| `llm-as-judge` | Evaluate design quality with rubrics |
 
 ## Skill Type
 
-**FLEXIBLE** — Select and combine research methods based on project constraints (budget, timeline, access to users). Lightweight methods are acceptable when full research is impractical.
+**FLEXIBLE** — Select and combine research methods based on project constraints (budget, timeline, access to users). Lightweight methods (heuristic evaluation, guerrilla testing) are acceptable when full research is impractical.

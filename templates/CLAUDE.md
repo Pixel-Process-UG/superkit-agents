@@ -95,7 +95,7 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 
 ---
 
-## §4 SKILL CATALOG (61 Skills)
+## §4 SKILL CATALOG (64 Skills)
 
 ### §4.1 Core (6 skills)
 
@@ -226,7 +226,7 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 
 ---
 
-## §5 AGENT DISPATCH TABLE (18 Agents)
+## §5 AGENT DISPATCH TABLE (20 Agents)
 
 | Agent | Purpose | When to Dispatch | Expected Output |
 |-------|---------|-----------------|-----------------|
@@ -253,7 +253,7 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 
 ---
 
-## §6 COMMAND REFERENCE (29 Commands)
+## §6 COMMAND REFERENCE (31 Commands)
 
 | Command | Skill | Description | Usage |
 |---------|-------|-------------|-------|
@@ -669,7 +669,7 @@ npx skills update                           # Update all
 ```
 
 ### When to Search
-- Task requires domain-specific knowledge not covered by 61 toolkit skills
+- Task requires domain-specific knowledge not covered by 64 toolkit skills
 - User asks about capabilities the toolkit doesn't have
 - A specialized framework or technology needs dedicated guidance
 

@@ -1,6 +1,9 @@
 ---
 name: canvas-design
-description: When the user needs HTML Canvas, SVG graphics, data visualization, generative art, or interactive visual elements with D3.js or similar libraries.
+description: >
+  Use when the user needs HTML Canvas, SVG graphics, data visualization, generative art, or interactive
+  visual elements with D3.js or similar libraries. Triggers: user says "canvas", "SVG", "chart",
+  "data visualization", "D3", "generative art", "animation", "interactive graphics", drawing on screen.
 ---
 
 # Canvas Design
@@ -9,31 +12,19 @@ description: When the user needs HTML Canvas, SVG graphics, data visualization, 
 
 Create performant, accessible, and visually compelling graphics using HTML Canvas 2D, SVG, and data visualization libraries. This skill covers everything from low-level pixel manipulation to high-level chart composition with D3.js, including generative art, interactive graphics, and animation.
 
-## Process
+## Phase 1: Requirements Analysis
 
-### Phase 1: Requirements Analysis
 1. Determine output type (static, animated, interactive, data-driven)
 2. Choose rendering technology (Canvas 2D, SVG, WebGL, hybrid)
 3. Identify data sources and update frequency
 4. Define accessibility requirements for the visualization
 5. Set performance budget (frame rate, element count)
 
-### Phase 2: Implementation
-1. Set up responsive canvas/SVG container
-2. Implement rendering pipeline (clear, update, draw)
-3. Add interaction handlers (hover, click, drag, zoom)
-4. Optimize render loop (requestAnimationFrame, dirty rectangles)
-5. Add accessibility layer (ARIA, screen reader descriptions)
+**STOP — Present technology recommendation with rationale before implementation.**
 
-### Phase 3: Polish
-1. Add transitions and easing
-2. Implement responsive resizing
-3. Test across devices and browsers
-4. Add fallback content for unsupported environments
+### Technology Selection Decision Table
 
-## Technology Selection Matrix
-
-| Requirement | Use Canvas 2D | Use SVG | Use WebGL |
+| Requirement | Canvas 2D | SVG | WebGL |
 |---|---|---|---|
 | < 1000 elements | Maybe | Yes | No |
 | > 10,000 elements | Yes | No | Yes |
@@ -44,10 +35,34 @@ Create performant, accessible, and visually compelling graphics using HTML Canva
 | Print quality | No | Yes | No |
 | Animation-heavy | Yes | Maybe | Yes |
 | Accessibility critical | No | Yes | No |
+| SEO-relevant content | No | Yes | No |
 
-## Canvas 2D API Patterns
+### When to Use Each Technology
 
-### Responsive Canvas Setup
+| Use Case | Recommended | Why |
+|---|---|---|
+| Dashboard charts (< 500 data points) | SVG + D3.js | DOM events, accessibility, print |
+| Real-time data stream (1000+ points) | Canvas 2D | Performance at scale |
+| Interactive map with tooltips | SVG | Hover events, accessible |
+| Particle system / generative art | Canvas 2D | Pixel-level control, performance |
+| 3D data visualization | WebGL (Three.js) | GPU acceleration |
+| Infographic for blog post | SVG | Scalable, accessible, printable |
+| Game or simulation | Canvas 2D or WebGL | Frame rate, pixel control |
+
+## Phase 2: Implementation
+
+1. Set up responsive canvas/SVG container
+2. Implement rendering pipeline (clear, update, draw)
+3. Add interaction handlers (hover, click, drag, zoom)
+4. Optimize render loop (requestAnimationFrame, dirty rectangles)
+5. Add accessibility layer (ARIA, screen reader descriptions)
+
+**STOP — Verify rendering works correctly at target frame rate before adding polish.**
+
+### Canvas 2D API Patterns
+
+#### Responsive Canvas Setup
+
 ```javascript
 function createResponsiveCanvas(container) {
   const canvas = document.createElement('canvas');
@@ -72,7 +87,8 @@ function createResponsiveCanvas(container) {
 }
 ```
 
-### Animation Loop Pattern
+#### Animation Loop Pattern
+
 ```javascript
 function createAnimationLoop(drawFn) {
   let rafId = null;
@@ -93,7 +109,8 @@ function createAnimationLoop(drawFn) {
 }
 ```
 
-### Dirty Rectangle Optimization
+#### Dirty Rectangle Optimization
+
 ```javascript
 class DirtyRectRenderer {
   constructor(ctx, width, height) {
@@ -120,9 +137,10 @@ class DirtyRectRenderer {
 }
 ```
 
-## SVG Patterns
+### SVG Patterns
 
-### Programmatic SVG Creation
+#### Programmatic SVG Creation
+
 ```javascript
 function createSVG(width, height, viewBox) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -134,7 +152,8 @@ function createSVG(width, height, viewBox) {
 }
 ```
 
-### SVG Accessibility
+#### SVG Accessibility
+
 ```xml
 <svg role="img" aria-labelledby="chart-title chart-desc">
   <title id="chart-title">Monthly Revenue Chart</title>
@@ -143,9 +162,10 @@ function createSVG(width, height, viewBox) {
 </svg>
 ```
 
-## D3.js Integration Patterns
+### D3.js Integration Patterns
 
-### Data Join Pattern (D3 v7)
+#### Data Join Pattern (D3 v7)
+
 ```javascript
 function updateBars(svg, data) {
   const bars = svg.selectAll('.bar')
@@ -170,7 +190,8 @@ function updateBars(svg, data) {
 }
 ```
 
-### Scales and Axes
+#### Scales and Axes
+
 ```javascript
 // Linear scale for continuous data
 const yScale = d3.scaleLinear()
@@ -188,7 +209,8 @@ const xScale = d3.scaleBand()
 const colorScale = d3.scaleOrdinal(d3.schemeTableau10);
 ```
 
-### Responsive D3 Chart
+#### Responsive D3 Chart
+
 ```javascript
 function responsiveChart(container, renderFn) {
   const observer = new ResizeObserver(entries => {
@@ -205,52 +227,74 @@ function responsiveChart(container, renderFn) {
 }
 ```
 
-## Generative Art Techniques
+## Phase 3: Polish
 
-### Noise-Based Generation
-- Perlin/Simplex noise for organic shapes
-- Fractal Brownian Motion (fBm) for terrain-like textures
-- Domain warping for fluid-like effects
+1. Add transitions and easing
+2. Implement responsive resizing
+3. Test across devices and browsers
+4. Add fallback content for unsupported environments
 
-### Particle Systems
-- Emit, update, destroy lifecycle
-- Force fields (gravity, attraction, repulsion)
-- Color aging and opacity fade
-- Object pooling for performance
+**STOP — Verify accessibility and performance targets are met.**
 
-### Algorithmic Patterns
-- L-systems for plant-like structures
-- Voronoi diagrams for cell-like partitions
-- Delaunay triangulation for mesh generation
-- Flow fields for directional patterns
+### Generative Art Techniques
 
-## Accessibility for Visualizations
+| Technique | Category | Use Case |
+|---|---|---|
+| Perlin/Simplex noise | Noise-based | Organic shapes, terrain |
+| Fractal Brownian Motion | Noise-based | Terrain-like textures |
+| Domain warping | Noise-based | Fluid-like effects |
+| Particle systems | Simulation | Fire, water, swarms |
+| L-systems | Algorithmic | Plant-like structures |
+| Voronoi diagrams | Algorithmic | Cell-like partitions |
+| Delaunay triangulation | Algorithmic | Mesh generation |
+| Flow fields | Algorithmic | Directional patterns |
 
-1. **Always provide text alternatives**: `<title>` and `<desc>` in SVG, ARIA labels on Canvas
-2. **Data tables as fallback**: hidden table with same data for screen readers
-3. **Keyboard interaction**: tab to elements, arrow keys for navigation
-4. **Color-blind safe palettes**: use shape/pattern in addition to color
-5. **High contrast mode**: detect and adjust
-6. **Reduced motion**: simplify or disable animations
+### Accessibility for Visualizations
 
-## Performance Guidelines
+| Requirement | Implementation |
+|---|---|
+| Text alternatives | `<title>` and `<desc>` in SVG, ARIA labels on Canvas |
+| Data table fallback | Hidden table with same data for screen readers |
+| Keyboard interaction | Tab to elements, arrow keys for navigation |
+| Color-blind safe | Use shape/pattern in addition to color |
+| High contrast mode | Detect and adjust colors |
+| Reduced motion | Simplify or disable animations with `prefers-reduced-motion` |
 
-- Canvas: batch draw calls, minimize state changes (fill/stroke/font)
-- SVG: limit to < 1000 DOM nodes, use `<use>` for repeated elements
-- OffscreenCanvas for web worker rendering
-- Throttle mousemove handlers to 16ms (60fps)
-- Use `will-change: transform` for CSS-animated SVG elements
-- Dispose of resources (observers, animation frames) on unmount
+### Performance Guidelines
 
-## Anti-Patterns
+| Technology | Optimization |
+|---|---|
+| Canvas | Batch draw calls, minimize state changes (fill/stroke/font) |
+| SVG | Limit to < 1000 DOM nodes, use `<use>` for repeated elements |
+| Worker | OffscreenCanvas for web worker rendering |
+| Events | Throttle mousemove handlers to 16ms (60fps) |
+| CSS | Use `will-change: transform` for CSS-animated SVG elements |
+| Cleanup | Dispose of observers, animation frames on unmount |
 
-- Using Canvas for text-heavy content (SVG is better for that)
-- Rendering full canvas every frame when nothing changed
-- Creating new SVG elements instead of updating existing ones (D3 data join)
-- Forgetting devicePixelRatio on Canvas (blurry on Retina)
-- No fallback content for Canvas elements
-- Inline event handlers on thousands of SVG elements
+## Anti-Patterns / Common Mistakes
+
+| Anti-Pattern | Why It Is Wrong | What to Do Instead |
+|---|---|---|
+| Canvas for text-heavy content | Poor text rendering, no accessibility | Use SVG for text-heavy visualizations |
+| Full canvas redraw every frame | Wastes CPU when nothing changed | Use dirty rectangle optimization |
+| Creating new SVG elements instead of updating | Memory leaks, poor performance | Use D3 data join pattern |
+| Forgetting devicePixelRatio | Blurry on Retina/HiDPI displays | Scale canvas by `window.devicePixelRatio` |
+| No fallback content for Canvas | Screen readers get nothing | Add `aria-label` and hidden data table |
+| Inline event handlers on 1000+ SVG elements | Memory and performance overhead | Use event delegation on parent |
+| Not cleaning up animation frames | Memory leaks on unmount | `cancelAnimationFrame` in cleanup |
+| Using D3 for simple static charts | Over-engineering | Use SVG directly or Chart.js |
+
+## Integration Points
+
+| Skill | Integration |
+|---|---|
+| `ui-ux-pro-max` | Chart type selection and color palettes |
+| `ui-design-system` | Design tokens for chart theming |
+| `artifacts-builder` | Self-contained visualization artifacts |
+| `senior-frontend` | Component integration in React/Vue/Svelte |
+| `performance-optimization` | Frame rate and rendering optimization |
+| `mobile-design` | Touch interaction for mobile charts |
 
 ## Skill Type
 
-**FLEXIBLE** — Choose the rendering technology and library that best fits the use case. The patterns above are recommendations, not requirements.
+**FLEXIBLE** — Choose the rendering technology and library that best fits the use case. SVG for accessibility-critical and interactive charts, Canvas for performance-critical and animation-heavy visuals, WebGL for 3D and massive datasets.

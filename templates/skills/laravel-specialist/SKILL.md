@@ -1,32 +1,47 @@
 ---
 name: laravel-specialist
-description: Use when building or maintaining Laravel applications — Eloquent ORM, Blade, Livewire, queues, Pest testing, middleware, service providers, migrations
+description: >
+  Use when building or maintaining Laravel applications — Eloquent ORM, Blade, Livewire,
+  queues, Pest testing, middleware, service providers, migrations.
+  Trigger conditions: Laravel project setup, Eloquent model design, Blade or Livewire
+  component creation, queue/job implementation, Pest test writing, middleware configuration,
+  migration authoring, route definition, Form Request validation, policy authorization,
+  Sanctum/Passport authentication, Horizon queue monitoring.
 ---
 
 # Laravel Specialist
 
 ## Overview
 
-Design, build, and maintain production-grade Laravel applications following the framework's conventions and best practices. This skill covers the full Laravel ecosystem: Eloquent ORM with advanced relationship patterns, Blade templating and Livewire interactivity, queue and event systems, middleware pipelines, service providers, Pest testing at every layer, and Artisan tooling for migrations, seeders, and factories. Apply this skill whenever Laravel is the application framework, whether greenfield or brownfield.
+Design, build, and maintain production-grade Laravel applications following the framework's conventions and best practices. This skill covers the full Laravel ecosystem: Eloquent ORM with advanced relationship patterns, Blade templating and Livewire interactivity, queue and event systems, middleware pipelines, service providers, Pest testing at every layer, and Artisan tooling for migrations, seeders, and factories.
 
-## Process
+Apply this skill whenever Laravel is the application framework, whether greenfield or brownfield.
+
+## Multi-Phase Process
 
 ### Phase 1: Context Discovery
-1. Identify Laravel version (`composer.json` → `laravel/framework`)
+
+1. Identify Laravel version (`composer.json` -> `laravel/framework`)
 2. Scan `config/` for enabled packages and custom configuration
 3. Map existing models, relationships, and migration history
 4. Review `routes/` for API, web, console, and channel definitions
 5. Catalog installed first-party packages (Sanctum, Horizon, Telescope, Pulse, Pennant, Scout, Cashier)
 6. Check for Livewire, Inertia, or Blade-only frontend stack
 
+> **STOP — Do NOT begin architecture review without knowing the Laravel version and installed packages.**
+
 ### Phase 2: Architecture Review
+
 1. Verify directory structure follows Laravel conventions (see section below)
 2. Assess service provider registrations and deferred loading
 3. Review middleware stack ordering and grouping
 4. Evaluate queue connection configuration and worker topology
 5. Check caching strategy (config, route, view, application-level)
 
+> **STOP — Do NOT begin implementation until architecture gaps are documented.**
+
 ### Phase 3: Implementation
+
 1. Write migrations first — schema is the source of truth
 2. Build Eloquent models with relationships, scopes, casts, and accessors
 3. Implement business logic in dedicated Action or Service classes
@@ -34,14 +49,20 @@ Design, build, and maintain production-grade Laravel applications following the 
 5. Add Form Requests for validation, Policies for authorization
 6. Wire events, listeners, and jobs for asynchronous workflows
 
+> **STOP — Do NOT skip Form Requests and Policies. Inline validation and authorization are anti-patterns.**
+
 ### Phase 4: Testing
+
 1. Unit tests for isolated logic (Actions, Value Objects, Casts)
 2. Feature tests for HTTP endpoints and middleware behavior
 3. Browser tests with Laravel Dusk for critical user flows
 4. Database assertions with `assertDatabaseHas`, `assertSoftDeleted`
 5. Queue and event fakes for side-effect verification
 
+> **STOP — Do NOT proceed to optimization without passing tests at all layers.**
+
 ### Phase 5: Optimization
+
 1. Apply eager loading to eliminate N+1 queries
 2. Cache expensive computations and config/route/view
 3. Index frequently-queried columns; use `EXPLAIN` to verify
@@ -54,10 +75,10 @@ Design, build, and maintain production-grade Laravel applications following the 
 
 | Relationship | Method | Inverse | Use Case |
 |---|---|---|---|
-| One-to-One | `hasOne` | `belongsTo` | User → Profile |
-| One-to-Many | `hasMany` | `belongsTo` | Post → Comments |
-| Many-to-Many | `belongsToMany` | `belongsToMany` | User ↔ Roles (pivot) |
-| Has-Many-Through | `hasManyThrough` | — | Country → Posts (through Users) |
+| One-to-One | `hasOne` | `belongsTo` | User -> Profile |
+| One-to-Many | `hasMany` | `belongsTo` | Post -> Comments |
+| Many-to-Many | `belongsToMany` | `belongsToMany` | User <-> Roles (pivot) |
+| Has-Many-Through | `hasManyThrough` | — | Country -> Posts (through Users) |
 | Polymorphic | `morphMany` / `morphTo` | `morphTo` | Comments on Posts and Videos |
 | Many-to-Many Polymorphic | `morphToMany` | `morphedByMany` | Tags on Posts and Videos |
 
@@ -162,6 +183,8 @@ class Dashboard extends Component
 }
 ```
 
+### Frontend Stack Decision Table
+
 | Decision | Choose Livewire | Choose Inertia |
 |---|---|---|
 | Existing Blade codebase | Yes | No |
@@ -215,7 +238,9 @@ class SendOrderConfirmation implements ShouldQueue
 }
 ```
 
-| Decision | Queued | Synchronous |
+### Sync vs Async Decision Table
+
+| Task | Queued | Synchronous |
 |---|---|---|
 | Sending emails / notifications | Yes | Never in request cycle |
 | PDF generation | Yes | Only if < 2s and user waits |
@@ -449,23 +474,33 @@ tests/
 | Public assets | `public` | Local with symlink |
 | Temporary files | `local` | Local, pruned by schedule |
 
-## Anti-Patterns
+## Anti-Patterns / Common Mistakes
 
-- **Fat controllers** — Move business logic to Action classes or Service classes; controllers orchestrate only
-- **Raw SQL in controllers** — Use Eloquent or the Query Builder; encapsulate complex queries in repository or scope methods
-- **Ignoring mass-assignment protection** — Always define `$fillable` or `$guarded`; never use `Model::unguard()` in production
-- **Not using Form Requests** — Inline validation in controllers couples validation to HTTP layer and prevents reuse
-- **Dispatching jobs without retry/backoff** — Always configure `$tries`, `$backoff`, and `failed()` on queued jobs
-- **Over-using global scopes** — Prefer local scopes; global scopes create hidden behavior that surprises other developers
-- **Storing money as floats** — Use integer cents and convert at the presentation layer
-- **Skipping database indexes** — Add composite indexes for columns used together in WHERE and ORDER BY
-- **Putting secrets in config files** — Use `.env` exclusively; never commit credentials
-- **Testing against production databases** — Use SQLite in-memory or a dedicated test database with `RefreshDatabase`
-- **Lazy loading in API responses** — Enable `preventLazyLoading()` in development; always eager-load in controllers
+| Anti-Pattern | Why It Fails | What To Do Instead |
+|---|---|---|
+| Fat controllers | Untestable, unmaintainable business logic | Move logic to Action or Service classes |
+| Raw SQL in controllers | SQL injection risk, not portable | Use Eloquent or Query Builder |
+| Missing mass-assignment protection | Data manipulation vulnerabilities | Always define `$fillable` or `$guarded` |
+| Inline validation in controllers | Couples validation to HTTP layer | Use Form Requests |
+| Jobs without retry/backoff config | Silent failures, no recovery | Configure `$tries`, `$backoff`, `failed()` |
+| Over-using global scopes | Hidden query behavior surprises developers | Prefer local scopes |
+| Storing money as floats | Floating-point precision errors | Use integer cents, convert at presentation |
+| Missing database indexes | Slow queries at scale | Add composite indexes for WHERE + ORDER BY |
+| Secrets in config files | Credential leaks in version control | Use `.env` exclusively |
+| Testing against production DB | Data corruption, unreliable tests | Use SQLite in-memory or dedicated test DB |
+| Lazy loading in API responses | N+1 queries, slow API responses | Enable `preventLazyLoading()` in dev |
+
+## Anti-Rationalization Guards
+
+- Do NOT skip migrations and edit the database directly -- migrations are the source of truth.
+- Do NOT put business logic in controllers because "it's faster" -- use Action classes.
+- Do NOT skip Form Requests because "the validation is simple" -- it always grows.
+- Do NOT disable `preventLazyLoading()` because "it's annoying" -- fix the N+1 queries.
+- Do NOT store money as floats because "the amounts are small" -- precision errors compound.
 
 ## Integration Points
 
-| Skill | Integration |
+| Skill | How It Connects |
 |---|---|
 | `php-specialist` | Modern PHP 8.x patterns underpin all Laravel code |
 | `laravel-boost` | AI-assisted development guidelines and MCP tooling |

@@ -1,6 +1,10 @@
 ---
 name: mobile-design
-description: When the user needs mobile app design and development patterns for React Native, Flutter, or SwiftUI — including platform HIG compliance, gestures, and offline-first architecture.
+description: >
+  Use when the user needs mobile app design and development patterns for React Native, Flutter, or
+  SwiftUI — including platform HIG compliance, gestures, and offline-first architecture. Triggers:
+  user says "mobile", "iOS", "Android", "React Native", "Flutter", "SwiftUI", "app design",
+  "mobile navigation", "touch targets", "offline-first".
 ---
 
 # Mobile Design
@@ -9,67 +13,85 @@ description: When the user needs mobile app design and development patterns for 
 
 Design and build mobile applications that feel native on each platform. This skill covers React Native, Flutter, and SwiftUI with deep knowledge of platform-specific Human Interface Guidelines (Apple HIG) and Material Design, gesture handling, responsive layouts, offline-first patterns, and app store submission requirements.
 
-## Process
+## Phase 1: Platform Analysis
 
-### Phase 1: Platform Analysis
 1. Identify target platforms (iOS, Android, both)
 2. Choose framework (React Native, Flutter, SwiftUI, or cross-platform)
 3. Review platform-specific design guidelines
 4. Define navigation architecture
 5. Map offline requirements
 
-### Phase 2: Design Implementation
+**STOP — Present platform and framework recommendation with rationale before design.**
+
+### Framework Selection Decision Table
+
+| Requirement | React Native | Flutter | SwiftUI | Kotlin/Compose |
+|---|---|---|---|---|
+| iOS only | Possible | Possible | Best | No |
+| Android only | Possible | Possible | No | Best |
+| Cross-platform | Good | Best | No | No |
+| Native performance critical | OK | Good | Best | Best |
+| Existing React web team | Best | Learning curve | Learning curve | Learning curve |
+| Complex animations | Good | Best | Good | Good |
+| Rapid prototyping | Good | Good | Best (iOS) | OK |
+| Large existing codebase (JS) | Best | Rewrite | Rewrite | Rewrite |
+
+## Phase 2: Design Implementation
+
 1. Build component library with platform variants
 2. Implement navigation (tab bar, stack, drawer)
 3. Handle safe areas and notches
 4. Add gesture recognizers
 5. Implement responsive layouts for phone/tablet
 
-### Phase 3: Platform Polish
-1. Platform-specific animations and transitions
-2. Haptic feedback integration
-3. App icon and launch screen
-4. Dark mode and Dynamic Type support
-5. App store metadata and screenshots
+**STOP — Present navigation architecture and component inventory for review.**
 
-## Platform-Specific HIG Compliance
+### Platform-Specific HIG Compliance
 
-### Apple Human Interface Guidelines
-- **Navigation**: Use UINavigationController patterns (push/pop), tab bars at bottom (max 5 items)
-- **Typography**: Use SF Pro / SF Pro Rounded, support Dynamic Type (all 11 sizes)
-- **Safe Areas**: Respect `safeAreaInsets` — never place content under notch/home indicator
-- **Gestures**: Swipe-back for navigation, long press for context menus
-- **Haptics**: Use UIFeedbackGenerator (impact, selection, notification)
-- **Colors**: Use semantic system colors (`label`, `secondaryLabel`, `systemBackground`)
-- **Modals**: Use sheets (`.sheet`, `.fullScreenCover`) with drag-to-dismiss
-- **Lists**: Use grouped inset style for settings, plain for content feeds
-- **Icons**: SF Symbols library (5000+ icons, variable weight/size)
+#### Apple Human Interface Guidelines
 
-### Material Design (Android)
-- **Navigation**: Bottom navigation bar, navigation drawer, top app bar
-- **Typography**: Roboto / product font, Material type scale (display/headline/title/body/label)
-- **Edge-to-edge**: Draw behind system bars, handle window insets
-- **Gestures**: Predictive back gesture (Android 14+), swipe-to-dismiss
-- **Haptics**: HapticFeedbackConstants (click, long press, keyboard)
-- **Colors**: Material You dynamic color from wallpaper, tonal palettes
-- **Components**: FAB, snackbar, bottom sheet, chips
-- **Motion**: Shared element transitions, container transform
+| Area | Guideline |
+|---|---|
+| Navigation | UINavigationController (push/pop), tab bars at bottom (max 5) |
+| Typography | SF Pro / SF Pro Rounded, support Dynamic Type (all 11 sizes) |
+| Safe Areas | Respect `safeAreaInsets` — never under notch/home indicator |
+| Gestures | Swipe-back for navigation, long press for context menus |
+| Haptics | UIFeedbackGenerator (impact, selection, notification) |
+| Colors | Semantic system colors (`label`, `secondaryLabel`, `systemBackground`) |
+| Modals | Sheets (`.sheet`, `.fullScreenCover`) with drag-to-dismiss |
+| Lists | Grouped inset for settings, plain for content feeds |
+| Icons | SF Symbols library (5000+ icons, variable weight/size) |
 
-### Cross-Platform Considerations
-```
-| Feature         | iOS Pattern          | Android Pattern        |
-|-----------------|----------------------|------------------------|
-| Back navigation | Swipe from left edge | System back button     |
-| Primary action  | Right nav bar button | FAB                    |
-| Alerts          | UIAlertController    | MaterialAlertDialog    |
-| Loading         | UIActivityIndicator  | CircularProgressIndicator |
-| Segmented       | UISegmentedControl   | Tabs / Chips           |
-| Date picker     | Wheel picker         | Calendar picker        |
-```
+#### Material Design (Android)
 
-## Safe Area Handling
+| Area | Guideline |
+|---|---|
+| Navigation | Bottom navigation bar, navigation drawer, top app bar |
+| Typography | Roboto / product font, Material type scale |
+| Edge-to-edge | Draw behind system bars, handle window insets |
+| Gestures | Predictive back gesture (Android 14+), swipe-to-dismiss |
+| Haptics | HapticFeedbackConstants (click, long press, keyboard) |
+| Colors | Material You dynamic color from wallpaper, tonal palettes |
+| Components | FAB, snackbar, bottom sheet, chips |
+| Motion | Shared element transitions, container transform |
 
-### React Native
+### Cross-Platform Pattern Decision Table
+
+| Feature | iOS Pattern | Android Pattern |
+|---|---|---|
+| Back navigation | Swipe from left edge | System back button |
+| Primary action | Right nav bar button | FAB |
+| Alerts | UIAlertController | MaterialAlertDialog |
+| Loading | UIActivityIndicator | CircularProgressIndicator |
+| Segmented | UISegmentedControl | Tabs / Chips |
+| Date picker | Wheel picker | Calendar picker |
+| Pull to refresh | Native support | SwipeRefreshLayout |
+| Context menu | Long press + haptic | Long press + popup |
+
+### Safe Area Handling
+
+#### React Native
+
 ```jsx
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -83,7 +105,8 @@ function Screen() {
 }
 ```
 
-### Flutter
+#### Flutter
+
 ```dart
 Widget build(BuildContext context) {
   return Scaffold(
@@ -94,7 +117,8 @@ Widget build(BuildContext context) {
 }
 ```
 
-### SwiftUI
+#### SwiftUI
+
 ```swift
 var body: some View {
   VStack {
@@ -104,9 +128,8 @@ var body: some View {
 }
 ```
 
-## Gesture Navigation Patterns
+### Gesture Navigation Patterns
 
-### Common Gestures
 | Gesture | Usage | Min Target |
 |---|---|---|
 | Tap | Primary action | 44x44pt |
@@ -117,22 +140,36 @@ var body: some View {
 | Pan/Drag | Reorder, move elements | Drag handle |
 
 ### Touch Target Rules
-- Minimum 44x44pt (iOS) / 48x48dp (Android)
-- Minimum 8pt spacing between targets
-- Visual element can be smaller than touch target (use padding)
-- Thumb zone: bottom 1/3 of screen for primary actions
 
-## Responsive Layouts
+| Rule | Value |
+|---|---|
+| Minimum size (iOS) | 44x44pt |
+| Minimum size (Android) | 48x48dp |
+| Minimum spacing | 8pt between targets |
+| Visual vs touch | Visual can be smaller; use padding for touch area |
+| Primary actions | Bottom 1/3 of screen (thumb zone) |
 
-### Adaptive Layout Strategy
-```
-Phone Portrait:    Single column, bottom tabs
-Phone Landscape:   Single column or split, side tabs
-Tablet Portrait:   Two columns, sidebar
-Tablet Landscape:  Three columns, persistent sidebar
-```
+## Phase 3: Platform Polish
 
-### React Native Responsive
+1. Platform-specific animations and transitions
+2. Haptic feedback integration
+3. App icon and launch screen
+4. Dark mode and Dynamic Type support
+5. App store metadata and screenshots
+
+**STOP — Test on physical devices before declaring complete.**
+
+### Responsive Layout Decision Table
+
+| Form Factor | Layout | Navigation |
+|---|---|---|
+| Phone Portrait | Single column | Bottom tabs |
+| Phone Landscape | Single column or split | Side tabs |
+| Tablet Portrait | Two columns | Sidebar |
+| Tablet Landscape | Three columns | Persistent sidebar |
+
+#### React Native Responsive
+
 ```javascript
 import { useWindowDimensions } from 'react-native';
 
@@ -147,7 +184,8 @@ function useResponsive() {
 }
 ```
 
-### Flutter Responsive
+#### Flutter Responsive
+
 ```dart
 class ResponsiveLayout extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -162,16 +200,18 @@ class ResponsiveLayout extends StatelessWidget {
 }
 ```
 
-## Offline-First Patterns
+### Offline-First Architecture
 
-### Architecture
-1. **Local-first data**: SQLite/Realm as primary store, server as sync target
-2. **Optimistic updates**: Apply changes locally, sync in background
-3. **Conflict resolution**: Last-write-wins or field-level merge
-4. **Queue management**: Persist pending operations, retry on connectivity
-5. **Cache strategy**: Stale-while-revalidate for API data
+| Layer | Pattern | Implementation |
+|---|---|---|
+| Data | Local-first | SQLite/Realm as primary store, server as sync target |
+| Updates | Optimistic | Apply locally, sync in background |
+| Conflicts | Resolution strategy | Last-write-wins or field-level merge |
+| Queue | Persistent ops | Store pending operations, retry on connectivity |
+| Cache | Stale-while-revalidate | Serve cached, refresh in background |
 
-### Implementation Checklist
+#### Implementation Checklist
+
 - [ ] Network status detection and UI indicator
 - [ ] Local database for all critical data
 - [ ] Operation queue for pending writes
@@ -179,25 +219,19 @@ class ResponsiveLayout extends StatelessWidget {
 - [ ] Conflict detection and resolution strategy
 - [ ] Cache invalidation policy
 - [ ] Sync status indicator in UI
-- [ ] Graceful degradation for features requiring network
+- [ ] Graceful degradation for network-only features
 
-## App Store Guidelines Summary
+### App Store Guidelines Summary
 
-### Apple App Store
-- Screenshots: 6.7" and 5.5" required, 12.9" for iPad
-- App icon: 1024x1024px, no alpha, no rounded corners (system applies)
-- Privacy nutrition labels: declare all data collection
-- Review time: typically 24-48 hours
-- Rejection triggers: crashes on launch, placeholder content, undisclosed APIs
+| Requirement | Apple App Store | Google Play Store |
+|---|---|---|
+| Screenshots | 6.7" and 5.5" required, 12.9" iPad | Min 2, max 8 per device |
+| App icon | 1024x1024px, no alpha, no corners | 512x512px, adaptive recommended |
+| Privacy | Nutrition labels required | Data safety section required |
+| Review time | 24-48 hours typical | Hours to days |
+| Common rejections | Crashes, placeholder content | Policy violations, crashes |
 
-### Google Play Store
-- Screenshots: minimum 2, maximum 8 per device type
-- Feature graphic: 1024x500px required
-- App icon: 512x512px, adaptive icon recommended
-- Content rating questionnaire: required
-- Data safety section: declare data collection and sharing
-
-## Performance Targets
+### Performance Targets
 
 | Metric | Target |
 |---|---|
@@ -208,16 +242,31 @@ class ResponsiveLayout extends StatelessWidget {
 | Memory usage | < 200MB baseline |
 | App size | < 50MB download |
 
-## Anti-Patterns
+## Anti-Patterns / Common Mistakes
 
-- Using web patterns in mobile (hover states, tiny buttons, horizontal scroll)
-- Ignoring platform conventions (iOS-styled buttons on Android)
-- Fixed layouts that break on different screen sizes
-- Blocking main thread with network/database operations
-- Not handling keyboard appearance (content hidden behind keyboard)
-- Assuming constant network connectivity
-- Skipping haptic feedback for important interactions
-- Using pixel values instead of density-independent points
+| Anti-Pattern | Why It Is Wrong | What to Do Instead |
+|---|---|---|
+| Web patterns in mobile (hover states) | No hover on touch devices | Use press/tap states |
+| Tiny touch targets (< 44pt) | Frustrating, accessibility fail | Minimum 44x44pt touch area |
+| iOS-styled buttons on Android | Feels foreign, confuses users | Use platform-native components |
+| Fixed layouts for one screen size | Breaks on tablets and foldables | Responsive layouts with breakpoints |
+| Blocking main thread with I/O | UI freezes, ANR dialogs | Async I/O, background threads |
+| Not handling keyboard appearance | Content hidden behind keyboard | Adjust layout on keyboard show |
+| Assuming constant connectivity | App crashes or hangs offline | Offline-first architecture |
+| Pixel values instead of dp/pt | Different sizes on different screens | Use density-independent units |
+| Skipping haptic feedback | App feels cheap and unresponsive | Add haptics for key interactions |
+
+## Integration Points
+
+| Skill | Integration |
+|---|---|
+| `ui-ux-pro-max` | Color palettes, typography, UX guidelines |
+| `ui-design-system` | Design tokens adapted for mobile |
+| `canvas-design` | Mobile data visualization and charts |
+| `ux-researcher-designer` | Mobile usability testing |
+| `senior-frontend` | React Native component implementation |
+| `deployment` | App store submission pipeline |
+| `performance-optimization` | Mobile performance profiling |
 
 ## Skill Type
 
