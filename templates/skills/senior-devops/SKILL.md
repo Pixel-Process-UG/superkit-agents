@@ -1,6 +1,10 @@
 ---
 name: senior-devops
-description: When the user needs CI/CD pipelines, Docker configuration, Kubernetes deployment, infrastructure-as-code, monitoring, or zero-downtime deployment strategies.
+description: >
+  Use when the user needs CI/CD pipelines, Docker configuration, Kubernetes deployment,
+  infrastructure-as-code, monitoring, or zero-downtime deployment strategies. Triggers: user says
+  "devops", "docker", "kubernetes", "CI/CD", "infrastructure", "monitoring", "deploy to production",
+  "container", "terraform", "observability".
 ---
 
 # Senior DevOps Engineer
@@ -9,28 +13,45 @@ description: When the user needs CI/CD pipelines, Docker configuration, Kubernet
 
 Design, build, and maintain production infrastructure and deployment pipelines. This skill covers Docker containerization, Kubernetes orchestration, CI/CD with GitHub Actions, infrastructure-as-code with Terraform/Pulumi, monitoring with Prometheus/Grafana, alerting strategies, zero-downtime deployments, and rollback procedures.
 
-## Process
+## Phase 1: Infrastructure Design
 
-### Phase 1: Infrastructure Design
 1. Define deployment topology (single server, cluster, multi-region)
 2. Choose containerization strategy (Docker, Buildpacks)
 3. Select orchestration platform (Kubernetes, ECS, Cloud Run)
 4. Plan networking (load balancers, DNS, TLS)
 5. Design secret management approach
 
-### Phase 2: Pipeline Implementation
+**STOP — Present infrastructure design to user for approval before implementation.**
+
+### Infrastructure Decision Table
+
+| Scale | Topology | Orchestration | Recommended |
+|---|---|---|---|
+| Hobby / MVP | Single server | Docker Compose | Railway, Fly.io |
+| Startup (< 100k users) | Small cluster | ECS, Cloud Run | AWS ECS, GCP Cloud Run |
+| Growth (100k - 1M users) | Multi-AZ cluster | Kubernetes | EKS, GKE |
+| Enterprise (1M+ users) | Multi-region | Kubernetes + service mesh | EKS/GKE + Istio |
+| Compliance-heavy | Dedicated/private cloud | Kubernetes | Self-managed K8s |
+
+## Phase 2: Pipeline Implementation
+
 1. Build CI pipeline (lint, test, build, security scan)
 2. Build CD pipeline (deploy to staging, production)
 3. Configure environment-specific settings
 4. Set up artifact registry (container images, packages)
 5. Implement deployment strategy (blue-green, canary, rolling)
 
-### Phase 3: Observability
+**STOP — Validate pipeline config syntax and present for review.**
+
+## Phase 3: Observability
+
 1. Deploy monitoring stack (Prometheus, Grafana)
 2. Configure alerting rules and escalation
 3. Set up log aggregation
 4. Implement distributed tracing
 5. Create runbooks for common incidents
+
+**STOP — Verify monitoring covers all critical services before declaring complete.**
 
 ## Dockerfile Best Practices
 
@@ -78,13 +99,16 @@ CMD ["node", "dist/server.js"]
 ```
 
 ### Key Dockerfile Rules
-- Multi-stage builds to minimize image size
-- `.dockerignore` file (exclude node_modules, .git, tests)
-- Non-root user for security
-- Specific base image versions
-- Layer ordering for cache efficiency (dependencies before source)
-- HEALTHCHECK instruction
-- No secrets in build args or layers
+
+| Rule | Why |
+|---|---|
+| Multi-stage builds | Minimize image size |
+| `.dockerignore` file | Exclude node_modules, .git, tests |
+| Non-root user | Security hardening |
+| Specific base image versions | Reproducible builds |
+| Layer ordering (deps before src) | Cache efficiency |
+| HEALTHCHECK instruction | Container health monitoring |
+| No secrets in build args/layers | Prevent credential leaks |
 
 ## Docker Compose Patterns
 
@@ -205,6 +229,7 @@ jobs:
 ## Terraform / Pulumi Patterns
 
 ### Terraform Structure
+
 ```
 modules/
   vpc/
@@ -219,17 +244,21 @@ environments/
 ```
 
 ### Key IaC Rules
-- Remote state backend (S3 + DynamoDB, GCS, Terraform Cloud)
-- State locking to prevent concurrent modifications
-- Environment-specific variable files
-- Module versioning for shared infrastructure
-- `terraform plan` in CI, `terraform apply` with manual approval
-- Drift detection on schedule
-- Tag all resources with owner, environment, project
+
+| Rule | Why |
+|---|---|
+| Remote state backend (S3 + DynamoDB) | Shared state, locking |
+| State locking | Prevent concurrent modifications |
+| Environment-specific variable files | Separation of concerns |
+| Module versioning | Reproducible shared infra |
+| `terraform plan` in CI | Catch issues before apply |
+| Drift detection on schedule | Detect manual changes |
+| Tag all resources | Ownership, cost allocation |
 
 ## Monitoring (Prometheus + Grafana)
 
 ### USE Method (Resources)
+
 | Resource | Utilization | Saturation | Errors |
 |---|---|---|---|
 | CPU | cpu_usage_percent | cpu_throttled | — |
@@ -238,11 +267,13 @@ environments/
 | Network | bytes_total | queue_length | errors_total |
 
 ### RED Method (Services)
+
 - **Rate**: requests per second
 - **Errors**: error rate per second
 - **Duration**: latency distribution (p50, p95, p99)
 
 ### Alerting Rules
+
 ```yaml
 groups:
   - name: app-alerts
@@ -260,11 +291,14 @@ groups:
 ```
 
 ### Alerting Best Practices
-- Alert on symptoms, not causes
-- Every alert must have a runbook link
-- Tiered severity: critical (page), warning (ticket), info (log)
-- Aggregate before alerting (avoid flapping)
-- Review and prune alerts quarterly
+
+| Practice | Why |
+|---|---|
+| Alert on symptoms, not causes | Reduces noise, focuses on impact |
+| Every alert has a runbook link | Enables fast response |
+| Tiered severity | critical=page, warning=ticket, info=log |
+| Aggregate before alerting | Avoid flapping |
+| Review and prune quarterly | Prevent alert fatigue |
 
 ## Zero-Downtime Deployment Strategies
 
@@ -276,38 +310,55 @@ groups:
 | Feature Flags | Deploy code dark, enable via flag | Very Low | Instant |
 
 ### Rollback Procedures
+
 1. **Automated**: health check fails -> automatic rollback
 2. **Manual**: `kubectl rollout undo deployment/app`
 3. **Database**: forward-only migrations with backward compatibility
 4. **Config**: revert via secret manager version
 
 ### Database Migration Safety
-- Migrations must be backward compatible (old code + new schema)
-- Never rename/drop columns in same deploy as code change
-- Two-phase: add new column -> deploy code using new column -> remove old column
-- Always test rollback of each migration
+
+| Rule | Rationale |
+|---|---|
+| Migrations must be backward compatible | Old code + new schema must work |
+| Never rename/drop columns in same deploy | Two-phase change required |
+| Two-phase: add column -> deploy -> remove old | Zero-downtime schema evolution |
+| Always test rollback of each migration | Ensure reversibility |
+
+## Anti-Patterns / Common Mistakes
+
+| Anti-Pattern | Why It Is Wrong | What to Do Instead |
+|---|---|---|
+| Manual production deployments | No audit trail, error-prone | Automate via CI/CD |
+| Shared or hardcoded secrets | Security breach risk | Use secrets manager |
+| No rollback plan before deploying | Stuck if deploy fails | Document rollback before every deploy |
+| `latest` tag for production images | Non-reproducible | Pin specific version tags |
+| Running containers as root | Security vulnerability | Use non-root user in Dockerfile |
+| Alert fatigue from non-actionable alerts | Real issues get missed | Alert on symptoms, tune thresholds |
+| Skipping staging environment | Bugs found in production | Always deploy to staging first |
+| Snowflake servers with manual config | Cannot reproduce, cannot scale | Infrastructure as code |
+| Monitoring without alerting | Nobody notices problems | Wire alerts to monitoring |
 
 ## Key Principles
 
 - Infrastructure as code — no manual changes to production
-- Immutable infrastructure — replace, don't patch
+- Immutable infrastructure — replace, do not patch
 - Cattle, not pets — servers are disposable
 - Shift left security — scan early in pipeline
 - Least privilege — minimal permissions everywhere
 - Automate everything that runs more than twice
 - Test the disaster recovery plan regularly
 
-## Anti-Patterns
+## Integration Points
 
-- Manual production deployments
-- Shared or hardcoded secrets
-- No rollback plan before deploying
-- `latest` tag for production images
-- Running containers as root
-- Alert fatigue from non-actionable alerts
-- Skipping staging environment
-- Snowflake servers with manual configuration
-- Monitoring without alerting (or vice versa)
+| Skill | Integration |
+|---|---|
+| `deployment` | Provides higher-level deploy pipeline orchestration |
+| `security-review` | Security scan stage in CI pipeline |
+| `planning` | Infrastructure changes are planned like features |
+| `verification-before-completion` | Post-deploy verification gate |
+| `finishing-a-development-branch` | Merge triggers deployment pipeline |
+| `mcp-builder` | MCP servers need containerization and deployment |
 
 ## Skill Type
 

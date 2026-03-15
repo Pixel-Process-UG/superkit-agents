@@ -1,22 +1,53 @@
 ---
 name: dispatching-parallel-agents
-description: "Use when a task has multiple independent subtasks that can be executed concurrently by separate agents, such as modifying unrelated modules, running independent analyses, or generating separate deliverables in parallel"
+description: "Use when a task has multiple independent subtasks that can be executed concurrently by separate agents. Triggers when decomposed work has 2+ subtasks with no data dependencies, when subtasks operate on different files or codebase sections, when serial execution time would be significantly longer than parallel, or when independent analyses or deliverables need concurrent generation."
 ---
 
 # Dispatching Parallel Agents
 
-## Purpose
+## Overview
 
-Coordinate multiple agents working concurrently on independent subtasks to reduce total execution time while maintaining correctness and avoiding conflicts.
+This skill coordinates multiple agents working concurrently on independent subtasks to reduce total execution time while maintaining correctness. It provides strict rules for identifying safe parallelization opportunities, writing focused agent prompts, and integrating results without conflicts. The key constraint is that no two agents may modify the same file.
 
-## When to Use
+**Announce at start:** "I'm using the dispatching-parallel-agents skill to run [N] independent tasks concurrently."
+
+## Trigger Conditions
 
 - A task decomposes into 2+ subtasks with no data dependencies between them
 - Each subtask operates on different files or different sections of the codebase
 - The combined result can be assembled after all agents complete
 - Total serial time would be significantly longer than parallel time
+- `/decompose` output reveals independent task clusters
 
-## When NOT to Use
+---
+
+## Phase 1: Independence Verification
+
+**Goal:** Confirm subtasks are truly independent and safe to parallelize.
+
+Every subtask must satisfy ALL four independence criteria:
+
+| Criterion | Question | If NO |
+|-----------|---------|-------|
+| No shared files | Do any two agents write to the same file? | Serialize those tasks |
+| No shared mutable state | Does any agent depend on a side effect of another? | Serialize dependent tasks |
+| Self-contained context | Can each agent work with only its own inputs? | Provide more context or serialize |
+| Independent verification | Can each agent's output be validated alone? | Combine into single task |
+
+### Parallelization Decision Table
+
+| Scenario | Parallelize? | Reason |
+|----------|-------------|--------|
+| Different files, different concerns | Yes | No conflict possible |
+| Same module, different files | Yes (careful) | Verify no shared imports change |
+| Same file, different sections | No | Merge conflicts inevitable |
+| Task B uses Task A's output | No | Sequential dependency |
+| Both read same files, write different | Yes | Reads are safe to parallelize |
+| Both modify shared config file | No | Config conflicts |
+| Independent test files | Yes | Tests are independent |
+| One agent adds dep, another uses it | No | Package-level dependency |
+
+### When NOT to Parallelize
 
 - Subtasks share mutable state or modify the same files
 - Task B depends on the output of Task A
@@ -24,43 +55,20 @@ Coordinate multiple agents working concurrently on independent subtasks to reduc
 - A single agent can complete the work in under 30 seconds
 - The task requires iterative refinement where each step informs the next
 
-## Step 1: Identify Independent Domains
+**STOP — Do NOT dispatch agents until:**
+- [ ] All four independence criteria verified for every subtask pair
+- [ ] No two agents write to the same file
+- [ ] Each agent's context is self-contained
 
-Decompose the task into subtasks that satisfy ALL of these criteria:
+---
 
-1. **No shared files** -- no two agents write to the same file
-2. **No shared mutable state** -- no agent depends on a side effect of another
-3. **Self-contained context** -- each agent can work with only its own inputs
-4. **Independent verification** -- each agent's output can be validated alone
+## Phase 2: Prompt Construction
 
-Example decomposition:
+**Goal:** Write focused, unambiguous prompts that prevent scope creep and conflicts.
 
-```
-Task: "Add logging, update tests, and fix the CSS layout bug"
+Each agent prompt MUST contain exactly four sections:
 
-Agent 1: Add logging to src/api/*.ts
-Agent 2: Update tests in tests/unit/*.test.ts
-Agent 3: Fix CSS in src/styles/layout.css
-
-These are independent: different files, different concerns.
-```
-
-Bad decomposition:
-
-```
-Task: "Refactor the User model and update all references"
-
-Agent 1: Refactor User model in src/models/user.ts
-Agent 2: Update controllers that import User
-
-Problem: Agent 2 depends on Agent 1's output (new interface shape).
-```
-
-## Step 2: Write Focused Agent Prompts
-
-Each agent prompt must contain exactly four sections.
-
-### Scope (What to Do)
+### Section 1: Scope (What to Do)
 
 Be specific about the exact task, files, and expected changes.
 
@@ -70,7 +78,7 @@ Replace console.log calls with the logger from src/utils/logger.ts.
 Files to modify: src/api/users.ts, src/api/orders.ts, src/api/products.ts.
 ```
 
-### Context (Everything Needed)
+### Section 2: Context (Everything Needed)
 
 Provide all information the agent needs without requiring it to explore.
 
@@ -82,7 +90,7 @@ CONTEXT:
 - Target pattern: logger.info('action', { data, requestId: req.id })
 ```
 
-### Output Format (What to Return)
+### Section 3: Output Format (What to Return)
 
 Define exactly what the agent should produce.
 
@@ -93,7 +101,7 @@ OUTPUT: For each modified file, return:
 3. Number of console.log calls replaced
 ```
 
-### Constraints (What NOT to Do)
+### Section 4: Constraints (What NOT to Do)
 
 Prevent scope creep and conflicts explicitly.
 
@@ -104,9 +112,10 @@ CONSTRAINTS:
 - Do NOT add new dependencies
 - Do NOT refactor function signatures
 - Do NOT modify test files
+- If you encounter an issue outside your scope, report it but do not fix it
 ```
 
-## Step 3: Agent Prompt Template
+### Agent Prompt Template
 
 ```
 You are a focused agent with a single task.
@@ -128,47 +137,102 @@ You are a focused agent with a single task.
 - If you encounter an issue outside your scope, report it but do not fix it
 ```
 
-## Step 4: Dispatch and Monitor
+### Prompt Quality Checklist
 
-1. Launch all agents concurrently using `TaskCreate` or sub-agents
+| Check | Question |
+|-------|---------|
+| Scope is specific | Can the agent complete the task without guessing? |
+| Context is complete | Does the agent need to explore the codebase? (should be no) |
+| Output is defined | Will the agent return what you need to integrate? |
+| Constraints are explicit | Are file boundaries and "do NOT" items clear? |
+
+**STOP — Do NOT dispatch until:**
+- [ ] Every prompt has all 4 sections
+- [ ] No prompt requires the agent to explore beyond provided context
+- [ ] File boundaries are explicit in every constraint section
+
+---
+
+## Phase 3: Dispatch and Monitor
+
+**Goal:** Launch all agents concurrently and track completion.
+
+1. Launch all agents concurrently
 2. Each agent works in isolation on its designated files
-3. Wait for all agents to complete before proceeding
+3. Monitor for completion — wait for ALL agents to finish
+4. Collect outputs from every agent
 
-## Step 5: Review and Integrate
+### Dispatch Tracking Table
 
-After all agents complete:
+```
+| Agent | Task | Status | Files | Result |
+|-------|------|--------|-------|--------|
+| Agent 1 | Add logging to API | in_progress | src/api/*.ts | — |
+| Agent 2 | Update unit tests | in_progress | tests/unit/*.ts | — |
+| Agent 3 | Fix CSS layout | in_progress | src/styles/*.css | — |
+```
 
-1. **Collect outputs** -- gather results from every agent
-2. **Check for conflicts** -- verify no file was modified by multiple agents
-3. **Run integration checks** -- execute the full test suite
-4. **Resolve issues** -- if integration fails, identify which agent's changes caused it
-5. **Commit atomically** -- all changes go in together or not at all
+### Failure Handling During Dispatch
 
-## Parallelization Safety Rules
+| Scenario | Action |
+|----------|--------|
+| One agent fails, others succeed | Retry failed agent independently |
+| Multiple agents fail independently | Retry each independently |
+| Agent reports out-of-scope issue | Note for post-integration review |
+| Agent exceeds scope (modifies wrong files) | Reject output, re-dispatch with stricter constraints |
 
-| Rule | Rationale |
-|------|-----------|
-| No two agents modify the same file | Prevents merge conflicts and race conditions |
-| No shared mutable state | Eliminates data races |
-| Each agent gets complete context | Prevents agents from exploring and stepping on each other |
-| Define file boundaries explicitly | Makes ownership unambiguous |
-| Review integration after completion | Catches cross-cutting issues |
+---
+
+## Phase 4: Integration and Verification
+
+**Goal:** Combine all agent outputs and verify the integrated result.
+
+1. **Collect outputs** — Gather results from every agent
+2. **Check for conflicts** — Verify no file was modified by multiple agents
+3. **Apply changes** — Integrate all outputs into the codebase
+4. **Run integration checks** — Execute the full test suite
+5. **Resolve issues** — If integration fails, identify which agent's changes caused it
+6. **Commit atomically** — All changes go in together or not at all
+
+### Integration Verification Checklist
+
+| Check | Command | Must Pass |
+|-------|---------|-----------|
+| No file conflicts | Diff outputs for shared files | Yes |
+| Tests pass | Full test suite | Yes |
+| Build passes | Build command | Yes |
+| Lint passes | Lint command | Yes |
+| No regressions | Compare test count before/after | Yes |
+
+### Integration Failure Decision Table
+
+| Failure Type | Diagnosis | Action |
+|-------------|-----------|--------|
+| Test failure in Agent 1's files | Agent 1's changes have a bug | Re-dispatch Agent 1 with test failure context |
+| Test failure in unrelated files | Cross-cutting regression | Identify root cause, fix manually or re-dispatch |
+| Build failure | Import/type issue | Check which agent's changes caused it, fix |
+| Merge conflict | Agents touched same file (should not happen) | Rollback, serialize those tasks |
+
+**STOP — Do NOT commit until:**
+- [ ] All agent outputs collected
+- [ ] No file conflicts detected
+- [ ] Full test suite passes
+- [ ] Build and lint pass
+
+---
 
 ## Common Parallel Patterns
 
-### By Module
-Split work across independent modules or packages.
+### Pattern Decision Table
 
-### By Layer
-One agent per architectural layer (API, service, data) when layers touch different files.
+| Pattern | When to Use | Example |
+|---------|-----------|---------|
+| By Module | Independent modules or packages | Agent per microservice |
+| By Layer | Layers touch different files | API agent, service agent, data agent |
+| By Feature Area | Independent vertical slices | Auth agent, profile agent, billing agent |
+| By Task Type | Code, tests, docs touch different files | Code agent, test agent, docs agent |
 
-### By Feature Area
-Each agent handles a complete vertical slice of an independent feature.
-
-### By Task Type
-Separate agents for code changes, test updates, and documentation -- only when these touch different files.
-
-## Example: Full Dispatch
+### Example: Full Dispatch
 
 ```
 TASK: "Update the API to v2, add tests, and update OpenAPI spec"
@@ -192,9 +256,64 @@ AGENT 3 - OpenAPI Spec:
   Constraints: Do NOT modify code or tests
 ```
 
-## Failure Handling
+---
 
-- If one agent fails, the others can still complete
-- Failed agent's task can be retried independently
-- If integration fails after all agents complete, identify the responsible agent and re-run only that one
-- Always have a rollback path: keep the pre-dispatch state recoverable
+## Anti-Patterns / Common Mistakes
+
+| Anti-Pattern | Why It Fails | Correct Approach |
+|-------------|-------------|-----------------|
+| Two agents modifying the same file | Merge conflicts, data loss | One file owner per dispatch |
+| Shared mutable state between agents | Race conditions, inconsistency | Eliminate shared state |
+| Incomplete context in prompts | Agents explore and step on each other | Provide ALL needed context |
+| Vague file boundaries | Agents guess scope, modify wrong files | Explicit file lists in constraints |
+| No integration check after completion | Cross-cutting bugs go undetected | Full test suite after integration |
+| Parallelizing sequential tasks | Agent B needs Agent A's output | Verify independence first |
+| Not tracking which agent touched which file | Cannot diagnose integration failures | Maintain dispatch tracking table |
+| Dispatching too many agents (10+) | Coordination overhead exceeds savings | 2-5 agents per dispatch round |
+| Skipping rollback preparation | Cannot recover from integration failure | Keep pre-dispatch state recoverable |
+
+---
+
+## Anti-Rationalization Guards
+
+<HARD-GATE>
+Do NOT dispatch agents that modify the same file. Do NOT parallelize tasks with data dependencies. Do NOT skip integration verification. If independence criteria are not met, serialize the tasks.
+</HARD-GATE>
+
+If you catch yourself thinking:
+- "These agents probably won't conflict..." — Verify. Do not assume.
+- "The integration will be fine..." — Run the full test suite. Always.
+- "I can merge their changes to the same file manually..." — No. One file, one owner.
+
+---
+
+## Integration Points
+
+| Skill | Relationship | When |
+|-------|-------------|------|
+| `task-decomposition` | Upstream — identifies independent task clusters | Before dispatching |
+| `subagent-driven-development` | Complementary — provides review gates | Quality gates for agent output |
+| `executing-plans` | Upstream — may delegate independent tasks | During plan execution |
+| `verification-before-completion` | Downstream — verifies integrated result | After integration |
+| `code-review` | Downstream — reviews integrated changes | After all agents complete |
+| `resilient-execution` | On failure — retries failed agents | When individual agents fail |
+
+---
+
+## Parallelism Safety Rules Summary
+
+| Rule | Rationale |
+|------|-----------|
+| No two agents modify the same file | Prevents merge conflicts and race conditions |
+| No shared mutable state | Eliminates data races |
+| Each agent gets complete context | Prevents agents from exploring and stepping on each other |
+| Define file boundaries explicitly | Makes ownership unambiguous |
+| Review integration after completion | Catches cross-cutting issues |
+| Atomic commit for all changes | All in or all out |
+| Always have a rollback path | Keep pre-dispatch state recoverable |
+
+---
+
+## Skill Type
+
+**RIGID** — Follow this process exactly. Independence verification is mandatory. All four prompt sections are mandatory. Integration verification is mandatory. No shortcuts on parallelism safety.

@@ -1,6 +1,11 @@
 ---
 name: pdf-processing
-description: When the user needs PDF generation, manipulation, form filling, table extraction, OCR, merging, splitting, watermarking, or metadata handling.
+description: >
+  Use when the user needs PDF generation, manipulation, form filling, table extraction,
+  OCR, merging, splitting, watermarking, or metadata handling.
+  Trigger conditions: generate PDF reports, extract text or tables from PDFs,
+  fill PDF forms programmatically, merge or split PDF files, add watermarks,
+  OCR scanned documents, read or write PDF metadata, convert HTML to PDF.
 ---
 
 # PDF Processing
@@ -9,42 +14,51 @@ description: When the user needs PDF generation, manipulation, form filling, tab
 
 Generate, manipulate, and extract data from PDF documents. This skill covers the Python PDF ecosystem: pypdf for merging/splitting/metadata, pdfplumber for text and table extraction, reportlab for generation, pytesseract for OCR, and strategies for form filling, watermarking, and complex document assembly.
 
-## Process
+Apply this skill whenever PDFs need to be created, parsed, transformed, or combined through code.
+
+## Multi-Phase Process
 
 ### Phase 1: Requirements
+
 1. Determine operation type (generate, extract, manipulate)
 2. Identify input PDF characteristics (scanned, digital, forms)
 3. Define output requirements (format, quality, size)
 4. Plan data pipeline (source data to PDF or PDF to data)
 5. Assess volume and performance requirements
 
+> **STOP — Do NOT select a library until the operation type and input characteristics are clear.**
+
 ### Phase 2: Implementation
-1. Select appropriate library for the task
+
+1. Select appropriate library for the task (see decision table)
 2. Implement core processing logic
 3. Handle edge cases (corrupted files, encrypted PDFs, mixed content)
 4. Add error handling and validation
 5. Optimize for file size and processing speed
 
+> **STOP — Do NOT skip edge case handling for encrypted, rotated, or scanned PDFs.**
+
 ### Phase 3: Validation
+
 1. Verify output renders correctly in multiple PDF viewers
 2. Check text is selectable (not rasterized) when applicable
 3. Validate extracted data accuracy
 4. Test with edge case PDFs (large, encrypted, scanned)
 5. Verify accessibility (tagged PDF where needed)
 
-## Library Selection Guide
+## Library Selection Decision Table
 
-| Task | Library | Why |
-|---|---|---|
-| Text extraction | pdfplumber | Best accuracy, handles layouts |
-| Table extraction | pdfplumber, camelot | Structured table parsing |
-| PDF generation | reportlab | Full control, professional quality |
-| Merge/Split | pypdf | Simple, reliable, fast |
-| Form filling | pypdf | Reads and fills AcroForms |
-| Metadata | pypdf | Read/write PDF properties |
-| OCR | pytesseract + pdf2image | Scanned document text extraction |
-| Watermarking | pypdf + reportlab | Overlay pages |
-| HTML to PDF | weasyprint, playwright | Web content to PDF |
+| Task | Library | Why | Alternative |
+|---|---|---|---|
+| Text extraction | pdfplumber | Best accuracy, handles layouts | pypdf (simpler, less accurate) |
+| Table extraction | pdfplumber | Structured table parsing | camelot (dedicated table tool) |
+| PDF generation | reportlab | Full control, professional quality | weasyprint (HTML-to-PDF) |
+| Merge / split | pypdf | Simple, reliable, fast | — |
+| Form filling | pypdf | Reads and fills AcroForms | pdfrw (alternative API) |
+| Metadata read/write | pypdf | Read/write PDF properties | — |
+| OCR (scanned docs) | pytesseract + pdf2image | Scanned document text extraction | EasyOCR (deep learning) |
+| Watermarking | pypdf + reportlab | Overlay pages | — |
+| HTML to PDF | weasyprint | CSS-based layout, server-friendly | playwright (browser rendering) |
 
 ## PDF Generation with ReportLab
 
@@ -53,7 +67,10 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm, mm
 from reportlab.lib.colors import HexColor
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table,
+    TableStyle, Image, PageBreak
+)
 from reportlab.lib import colors
 
 def generate_report(output_path, data):
@@ -104,13 +121,13 @@ def generate_report(output_path, data):
     ]))
     story.append(table)
 
-    # Build document
     doc.build(story)
 ```
 
 ### Custom Page Template (Headers/Footers)
 ```python
 from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate
+from datetime import datetime
 
 def add_header_footer(canvas, doc):
     canvas.saveState()
@@ -308,26 +325,37 @@ with open('updated.pdf', 'wb') as f:
     writer.write(f)
 ```
 
-## Quality Checklist
+## Anti-Patterns / Common Mistakes
 
-- [ ] Output renders correctly in Adobe Reader, Preview, Chrome
-- [ ] Text is selectable and searchable (not rasterized)
-- [ ] Tables extract accurately with proper column alignment
-- [ ] Images are sufficient quality for the use case
-- [ ] File size is reasonable (compress images if needed)
-- [ ] Encrypted PDFs handled (password prompt or error message)
-- [ ] Unicode characters render correctly
-- [ ] Page orientation handled (portrait and landscape)
+| Anti-Pattern | Why It Fails | What To Do Instead |
+|---|---|---|
+| OCR on digital (text-based) PDFs | Slow and inaccurate when text is already extractable | Check if text extracts first, OCR only if empty |
+| Not handling encrypted PDFs | Crashes or silent failures | Detect encryption, prompt for password or skip gracefully |
+| Loading entire large PDFs into memory | Memory exhaustion on server | Stream pages or process in chunks |
+| Ignoring page rotation metadata | Text extraction returns garbled results | Read and apply rotation before extraction |
+| Hardcoding page dimensions | Breaks on non-A4 documents | Read dimensions from source PDF |
+| Not closing file handles | Resource leaks in long-running processes | Use context managers (`with` statements) |
+| Generating without multi-viewer testing | Rendering differences across viewers | Test in Adobe Reader, Preview, and Chrome |
+| Extracting tables without tuning settings | Poor column alignment, merged cells | Adjust `table_settings` per document type |
 
-## Anti-Patterns
+## Anti-Rationalization Guards
 
-- Using OCR on digital (text-based) PDFs (extract text directly)
-- Not handling encrypted/password-protected PDFs
-- Loading entire large PDFs into memory at once
-- Ignoring page rotation metadata
-- Hardcoding page dimensions instead of reading from source
-- Not closing file handles (use context managers)
-- Generating PDFs without testing in multiple viewers
+- Do NOT use OCR without first attempting direct text extraction -- check the PDF type.
+- Do NOT skip encryption detection -- handle it explicitly even if "most PDFs aren't encrypted."
+- Do NOT assume A4 page size -- read dimensions from the source document.
+- Do NOT test in only one PDF viewer -- rendering varies across Adobe, Preview, and Chrome.
+- Do NOT process large PDFs without memory-conscious patterns (streaming, chunking).
+
+## Integration Points
+
+| Skill | How It Connects |
+|---|---|
+| `docx-processing` | DOCX-to-PDF conversion pipeline, or choosing between formats |
+| `xlsx-processing` | Data from Excel populates PDF report tables |
+| `email-composer` | Generated PDFs attach to professional emails |
+| `content-research-writer` | Research output formatted as PDF whitepapers |
+| `file-organizer` | Output file naming and directory structure conventions |
+| `deployment` | PDF generation pipelines in server/CI environments |
 
 ## Skill Type
 

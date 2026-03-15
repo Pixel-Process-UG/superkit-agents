@@ -5,23 +5,39 @@ description: "Use when designing UI components, creating component architectures
 
 # Frontend UI Design
 
-## Purpose
+## Overview
 
-Guide the design and implementation of frontend user interfaces with consistent architecture, accessibility, responsive behavior, and performance.
+Guide the design and implementation of frontend user interfaces with consistent architecture, accessibility, responsive behavior, and performance. This skill covers component patterns, design system integration, state management selection, and WCAG compliance — producing components that are testable, accessible, and performant.
 
-## When to Use
+**Announce at start:** "I'm using the frontend-ui-design skill to design the UI."
 
-- Designing new UI components or component libraries
-- Creating or extending a design system
-- Implementing responsive layouts
-- Choosing state management solutions
-- Setting up component architecture for a new project
+## Phase 1: Discovery
 
-## Component Architecture Patterns
+Ask these questions to understand the UI requirements:
 
-### Atomic Design
+| # | Question | What It Determines |
+|---|----------|-------------------|
+| 1 | What component or page are we building? | Scope and complexity |
+| 2 | What framework/library? (React, Vue, Svelte, etc.) | Code patterns |
+| 3 | Is there an existing design system or component library? | Constraints |
+| 4 | What devices must be supported? (mobile, tablet, desktop) | Responsive strategy |
+| 5 | Accessibility requirements? (WCAG level) | A11y standards |
+| 6 | What data does this component need? | State management approach |
 
-Organize components in five levels of increasing complexity:
+STOP after discovery — present a summary of constraints and approach before designing.
+
+## Phase 2: Component Architecture Selection
+
+### Architecture Pattern Decision Table
+
+| Pattern | When to Use | When NOT to Use |
+|---------|------------|-----------------|
+| **Atomic Design** | Building a component library from scratch | Adding one component to existing system |
+| **Compound Components** | Multi-part component needing layout flexibility | Simple single-purpose component |
+| **Hooks Pattern** | Same logic reused across different UIs | Logic tied to one specific component |
+| **Container/Presenter** | Components need isolated testing or multiple data sources | Simple components with minimal logic |
+
+### Atomic Design Levels
 
 | Level | Description | Examples |
 |-------|-------------|----------|
@@ -31,9 +47,7 @@ Organize components in five levels of increasing complexity:
 | **Templates** | Page layouts with placeholder content | DashboardLayout, AuthLayout |
 | **Pages** | Templates populated with real data | HomePage, SettingsPage |
 
-### Compound Components
-
-Components that share implicit state through a parent:
+### Compound Components Example
 
 ```tsx
 <Select value={selected} onChange={setSelected}>
@@ -47,9 +61,7 @@ Components that share implicit state through a parent:
 
 Use when: a component has multiple sub-parts that must coordinate but consumers need layout flexibility.
 
-### Hooks Pattern
-
-Extract component logic into reusable hooks:
+### Hooks Pattern Example
 
 ```tsx
 function useDialog() {
@@ -62,20 +74,11 @@ function useDialog() {
 
 Use when: the same logic is needed across multiple components with different UI.
 
-### Container / Presenter Pattern
+STOP after architecture selection — confirm the pattern choice before proceeding.
 
-Separate data fetching and business logic (container) from rendering (presenter):
-
-- **Container**: fetches data, manages state, passes props down
-- **Presenter**: pure rendering, receives all data via props, no side effects
-
-Use when: components need to be testable in isolation or reused with different data sources.
-
-## Responsive Design
+## Phase 3: Responsive Design
 
 ### Mobile-First Breakpoints
-
-Define breakpoints from small to large. Start with mobile styles, add complexity for larger screens:
 
 | Breakpoint | Target | Min-Width |
 |------------|--------|-----------|
@@ -85,161 +88,175 @@ Define breakpoints from small to large. Start with mobile styles, add complexity
 | xl | Large desktop | 1280px |
 | 2xl | Wide desktop | 1536px |
 
-### Fluid Typography
+### Responsive Strategy Decision Table
 
-Scale text smoothly between breakpoints using `clamp()`:
+| Need | Use | Not |
+|------|-----|-----|
+| Layout changes based on viewport size | Media queries | Container queries |
+| Component adapts to parent container size | Container queries | Media queries |
+| Text scales smoothly between breakpoints | `clamp()` fluid typography | Fixed font sizes |
+| Images adapt to viewport | `srcset` + `sizes` | Single fixed image |
+
+### Fluid Typography
 
 ```css
 font-size: clamp(1rem, 0.5rem + 1.5vw, 1.5rem);
 ```
 
-### Container Queries vs Media Queries
+## Phase 4: Accessibility (WCAG 2.1 AA)
 
-| Use | When |
-|-----|------|
-| Media queries | Layout changes based on viewport size |
-| Container queries | Component adapts to its parent container size |
+### Semantic HTML Decision Table
 
-Prefer container queries for reusable components that appear in different layout contexts.
-
-## Accessibility (WCAG 2.1 AA)
-
-### Semantic HTML
-
-Use the correct HTML element before reaching for ARIA:
-
-| Need | Use | Not |
+| Need | Use | NOT |
 |------|-----|-----|
 | Navigation | `<nav>` | `<div class="nav">` |
 | Button action | `<button>` | `<div onClick>` |
 | Page sections | `<main>`, `<section>`, `<aside>` | `<div>` |
 | Headings | `<h1>`-`<h6>` in order | `<div class="heading">` |
+| List of items | `<ul>`, `<ol>` | Nested `<div>`s |
+| Form labels | `<label for="...">` | Placeholder text only |
 
-### ARIA Attributes
+### ARIA Usage Rules
 
-Use ARIA only when semantic HTML is insufficient:
+| Rule | When |
+|------|------|
+| Use semantic HTML first | Always — ARIA is a fallback |
+| `aria-label` | Labels for elements without visible text |
+| `aria-describedby` | Associates descriptive text with an element |
+| `aria-live` | Announces dynamic content changes |
+| `aria-expanded` | Toggleable sections (accordions, menus) |
+| `role` | Only when no semantic element exists |
 
-- `aria-label`: labels for elements without visible text
-- `aria-describedby`: associates descriptive text
-- `aria-live`: announces dynamic content changes
-- `aria-expanded`: toggleable sections
-- `role`: only when no semantic element exists
+### Keyboard Navigation Requirements
 
-### Keyboard Navigation
-
-All interactive elements must be:
-- Focusable (naturally or via `tabindex="0"`)
+- All interactive elements focusable (naturally or `tabindex="0"`)
 - Operable via keyboard (Enter, Space, Escape, Arrow keys)
-- Visually focused (never `outline: none` without a replacement)
-- In logical tab order
+- Visible focus indicator (never `outline: none` without replacement)
+- Logical tab order matching visual order
+- Focus traps for modals and dialogs
 
-Implement focus traps for modals and dialogs.
+### Color Contrast Requirements
 
-### Color Contrast
-
-- **Normal text**: minimum 4.5:1 contrast ratio
-- **Large text** (18px+ or 14px+ bold): minimum 3:1
-- **UI components**: minimum 3:1 against adjacent colors
-- Never convey information by color alone (add icons, patterns, or text)
+| Element | Minimum Ratio |
+|---------|--------------|
+| Normal text | 4.5:1 |
+| Large text (18px+ or 14px+ bold) | 3:1 |
+| UI components | 3:1 against adjacent colors |
+| Information conveyed by color | Must also use icons, patterns, or text |
 
 ### Screen Reader Testing
 
 Test with at least one screen reader:
 - macOS: VoiceOver (built-in)
 - Windows: NVDA (free) or JAWS
-- Verify all content is announced in logical order
-- Verify form errors are associated with inputs
-- Verify dynamic content updates are announced
+- Verify: content announced in logical order, form errors associated with inputs, dynamic updates announced
 
-## Design System Integration
+## Phase 5: State Management & Performance
 
-### Design Tokens
+### State Management Decision Table
 
-Define foundational values as tokens, not hard-coded values:
+| State Type | Solution | When |
+|------------|----------|------|
+| **Local** | `useState`, `useReducer` | State used by one component or direct children |
+| **Shared** | Context, Zustand, Jotai | State shared across multiple unrelated components |
+| **Server** | TanStack Query, SWR | Data fetched from API, needs caching/revalidation |
+| **Form** | React Hook Form, Formik | Complex forms with validation and submission |
+| **URL** | Search params, router state | State that should be bookmarkable/shareable |
+
+### Selection Heuristic
+
+1. Start with `useState` — only escalate when you hit a real limitation
+2. If prop drilling exceeds 2 levels, consider Context or state library
+3. If caching API responses, use a server state library (not Redux for server state)
+4. For forms with >3 fields and validation, use a form library
+
+### Performance Optimization Checklist
+
+| Technique | When to Apply |
+|-----------|--------------|
+| `React.lazy()` + `Suspense` | Route-level code splitting |
+| `loading="lazy"` on images | Below-the-fold images |
+| Virtualization | Lists with >50 items |
+| `useMemo` | Expensive computations |
+| `useCallback` | Callbacks passed to memoized children |
+| Dynamic `import()` | Conditionally loaded heavy libraries |
+| WebP/AVIF images | All image assets |
+| Explicit `width`/`height` on images | Prevent layout shift |
+
+### Design System Integration
+
+**Design Tokens** — define foundational values, not hard-coded:
 
 ```ts
 const tokens = {
-  color: {
-    primary: '#2563eb',
-    secondary: '#64748b',
-    error: '#dc2626',
-    success: '#16a34a',
-  },
-  spacing: {
-    xs: '0.25rem',  // 4px
-    sm: '0.5rem',   // 8px
-    md: '1rem',     // 16px
-    lg: '1.5rem',   // 24px
-    xl: '2rem',     // 32px
-  },
-  typography: {
-    fontFamily: { sans: 'Inter, system-ui, sans-serif' },
-    fontSize: { sm: '0.875rem', base: '1rem', lg: '1.125rem' },
-  },
+  color: { primary: '#2563eb', secondary: '#64748b', error: '#dc2626' },
+  spacing: { xs: '0.25rem', sm: '0.5rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
+  typography: { fontFamily: { sans: 'Inter, system-ui, sans-serif' } },
 };
 ```
 
-### Component Variants
-
-Define variant APIs using a consistent pattern:
+**Component Variants** — consistent variant API:
 
 ```tsx
 <Button variant="primary" size="md">Save</Button>
 <Button variant="outline" size="sm">Cancel</Button>
-<Button variant="ghost" size="lg">Learn More</Button>
 ```
 
-Use a variant mapping system (e.g., cva, class-variance-authority) for scalable variant management.
-
-### Theme Support
-
-- Use CSS custom properties for runtime theme switching
-- Support light and dark themes at minimum
-- Respect `prefers-color-scheme` as the default
+**Theme Support:**
+- CSS custom properties for runtime theme switching
+- Support light + dark themes at minimum
+- Respect `prefers-color-scheme` as default
 - Allow user override stored in localStorage
-- Apply theme at the root element to cascade naturally
 
-## State Management Selection Guide
+STOP after design — present the full component specification for review.
 
-| State Type | Solution | When |
-|------------|----------|------|
-| **Local** | `useState`, `useReducer` | State used by one component or its direct children |
-| **Shared** | Context, Zustand, Jotai | State shared across multiple unrelated components |
-| **Server** | TanStack Query, SWR | Data fetched from an API, needs caching and revalidation |
-| **Form** | React Hook Form, Formik | Complex forms with validation, errors, and submission |
-| **URL** | Search params, router state | State that should be bookmarkable or shareable |
+## Anti-Patterns / Common Mistakes
 
-### Selection Heuristic
+| Mistake | Why It Is Wrong | What To Do Instead |
+|---------|----------------|-------------------|
+| `<div onClick>` instead of `<button>` | Not keyboard accessible, no screen reader semantics | Use semantic HTML elements |
+| `outline: none` without replacement | Keyboard users cannot see focus | Replace with visible focus style |
+| Fixed font sizes (px) | Cannot scale with user preferences | Use `rem` and `clamp()` |
+| Prop drilling through 4+ levels | Maintenance nightmare | Use Context or state library |
+| Fetching in useEffect + useState | No caching, no dedup, race conditions | Use TanStack Query or SWR |
+| Premature memoization | Adds complexity without measured benefit | Profile first, optimize measured bottlenecks |
+| Desktop-first responsive design | Mobile experience is an afterthought | Start mobile-first, add complexity up |
+| Color as sole information carrier | Inaccessible to colorblind users | Add icons, patterns, or text labels |
+| No loading/error states | Users see blank screens or cryptic errors | Design loading, error, and empty states |
 
-1. Start with `useState` -- only move to a more complex solution when you hit a real limitation
-2. If prop drilling exceeds 2 levels, consider Context or a state library
-3. If caching API responses, use a server state library (not Redux)
-4. For forms with more than 3 fields and validation, use a form library
+## Anti-Rationalization Guards
 
-## Performance
+- **Do NOT** skip accessibility — WCAG 2.1 AA is the minimum, not optional
+- **Do NOT** use `<div>` with onClick instead of semantic elements
+- **Do NOT** skip keyboard navigation testing
+- **Do NOT** choose state management before understanding the actual need
+- **Do NOT** skip the discovery phase — understand constraints first
+- **Do NOT** optimize performance without measuring first
 
-### Lazy Loading
+## Integration Points
 
-- **Components**: `React.lazy()` with `Suspense` boundaries for route-level splitting
-- **Images**: `loading="lazy"` attribute, or Intersection Observer for custom behavior
-- **Data**: paginate or virtualize lists with more than 50 items
+| Skill | Relationship |
+|-------|-------------|
+| `api-design` | Upstream: API response shapes inform component data needs |
+| `spec-writing` | Upstream: specs define component behavioral requirements |
+| `planning` | Downstream: component designs become implementation tasks |
+| `test-driven-development` | Downstream: component spec drives test-first implementation |
+| `senior-frontend` | Parallel: specialist knowledge for React/Next.js specifics |
+| `ui-ux-pro-max` | Upstream: UX design informs component requirements |
+| `ui-design-system` | Parallel: design system tokens feed component styling |
+| `performance-optimization` | Downstream: profile and optimize after implementation |
 
-### Code Splitting
+## Verification Gate
 
-- Split by route (each page is a separate chunk)
-- Split heavy libraries used in specific features (e.g., chart library only on dashboard)
-- Use dynamic `import()` for conditionally loaded features
+Before claiming the UI design is complete:
 
-### Image Optimization
+1. VERIFY component architecture pattern is explicitly chosen with rationale
+2. VERIFY responsive behavior is defined for all target breakpoints
+3. VERIFY accessibility requirements are specified (WCAG level, keyboard, color contrast)
+4. VERIFY state management approach is selected based on actual needs
+5. VERIFY loading, error, and empty states are designed
+6. VERIFY the user has approved the component specification
 
-- Use modern formats: WebP (universal support), AVIF (better compression)
-- Serve responsive sizes via `srcset` and `sizes` attributes
-- Set explicit `width` and `height` to prevent layout shift
-- Use a CDN with automatic format negotiation when possible
+## Skill Type
 
-### Rendering Performance
-
-- Memoize expensive computations with `useMemo`
-- Memoize callback references with `useCallback` only when passed to memoized children
-- Avoid creating objects/arrays in render -- move them outside or memoize
-- Use React DevTools Profiler to identify unnecessary re-renders
+**Flexible** — Adapt component patterns, responsive strategy, and state management to project framework and constraints while preserving accessibility requirements and the discovery-first approach.

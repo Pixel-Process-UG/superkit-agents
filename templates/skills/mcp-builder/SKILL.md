@@ -1,6 +1,9 @@
 ---
 name: mcp-builder
-description: When the user needs to build MCP (Model Context Protocol) servers — tool definitions, resource management, prompt templates, transport layers, and client integration.
+description: >
+  Use when the user needs to build MCP (Model Context Protocol) servers — tool definitions, resource
+  management, prompt templates, transport layers, and client integration. Triggers: user says "MCP",
+  "MCP server", "model context protocol", building tools for AI clients, creating AI integrations.
 ---
 
 # MCP Builder
@@ -9,32 +12,70 @@ description: When the user needs to build MCP (Model Context Protocol) servers �
 
 Build production-quality MCP (Model Context Protocol) servers that expose tools, resources, and prompts to AI clients. This skill covers the full development lifecycle: tool definition, resource management, prompt templates, transport configuration (stdio, SSE), error handling, security hardening, testing, and client integration.
 
-## Process
+## Phase 1: Design
 
-### Phase 1: Design
 1. Identify capabilities to expose (tools, resources, prompts)
 2. Define tool schemas with Zod/JSON Schema
 3. Plan resource URI patterns
 4. Design error handling strategy
 5. Choose transport layer (stdio for CLI, SSE for web)
 
-### Phase 2: Implementation
+**STOP — Present the capability inventory and transport choice to user for approval.**
+
+### Capability Selection Decision Table
+
+| What You Have | MCP Primitive | Example |
+|---|---|---|
+| Actions that modify state | Tool | `create-issue`, `send-email`, `deploy-app` |
+| Actions that read/query | Tool | `search-documents`, `get-status` |
+| Data the AI should read | Resource | `config://settings`, `docs://api/endpoints` |
+| Reusable prompt patterns | Prompt | `code-review`, `summarize-document` |
+| Real-time data feeds | Resource (subscribable) | `metrics://cpu/current` |
+
+### Transport Selection Decision Table
+
+| Context | Transport | Why |
+|---|---|---|
+| CLI tool, local client (Claude Desktop) | Stdio | Simple, no network overhead |
+| Web application, remote clients | SSE | Network-accessible, real-time |
+| Both local and remote | Stdio + SSE | Support both use cases |
+| High-throughput, bidirectional | WebSocket (custom) | Lower latency than SSE |
+
+## Phase 2: Implementation
+
 1. Set up MCP server project structure
 2. Implement tool handlers with input validation
 3. Implement resource providers
 4. Add prompt templates
 5. Configure transport and authentication
 
-### Phase 3: Hardening
-1. Add comprehensive error handling
-2. Implement rate limiting and timeouts
-3. Security review (input sanitization, permission checks)
-4. Write integration tests
-5. Document tools and resources for clients
+**STOP — Run basic smoke tests before moving to hardening.**
 
-## Tool Definition Patterns
+### Project Structure
 
-### Basic Tool Definition
+```
+src/
+  index.ts          # Server entry point
+  tools/
+    search.ts       # Tool implementations
+    create.ts
+  resources/
+    documents.ts    # Resource providers
+    config.ts
+  prompts/
+    review.ts       # Prompt templates
+  lib/
+    database.ts     # Shared utilities
+    validation.ts
+tests/
+  tools.test.ts
+  resources.test.ts
+package.json
+tsconfig.json
+```
+
+### Tool Definition Pattern
+
 ```typescript
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
@@ -68,14 +109,18 @@ server.tool(
 ```
 
 ### Tool Design Principles
-- **Clear naming**: verb-noun format (`search-documents`, `create-issue`, `get-status`)
-- **Descriptive descriptions**: explain what the tool does, when to use it, and what it returns
-- **Validated inputs**: use Zod schemas with `.describe()` on every field
-- **Structured outputs**: return well-formatted text or structured data
-- **Idempotent when possible**: same input produces same result
-- **Error messages**: actionable, specific error responses
+
+| Principle | Rule |
+|---|---|
+| Clear naming | verb-noun format: `search-documents`, `create-issue` |
+| Descriptive descriptions | Explain what, when, and return value |
+| Validated inputs | Zod schemas with `.describe()` on every field |
+| Structured outputs | Well-formatted text or JSON |
+| Idempotent when possible | Same input produces same result |
+| Actionable errors | Specific error messages with `isError: true` |
 
 ### Tool Response Patterns
+
 ```typescript
 // Text response
 return { content: [{ type: 'text', text: 'Operation completed successfully' }] };
@@ -104,6 +149,7 @@ return {
 ## Resource Management
 
 ### Resource Definition
+
 ```typescript
 // Static resource
 server.resource(
@@ -135,6 +181,7 @@ server.resource(
 ```
 
 ### Resource URI Conventions
+
 ```
 file:///path/to/file          — Local files
 https://api.example.com/data  — Remote HTTP resources
@@ -160,7 +207,7 @@ server.prompt(
         role: 'user',
         content: {
           type: 'text',
-          text: `Review this code with ${severity} standards:\n\n\`\`\`\n${code}\n\`\`\`\n\nProvide feedback on: correctness, performance, security, readability.`,
+          text: `Review this code with ${severity} standards:\n\n\`\`\`\n${code}\n\`\`\``,
         },
       }],
     };
@@ -171,6 +218,7 @@ server.prompt(
 ## Transport Layers
 
 ### Stdio Transport (CLI tools, local development)
+
 ```typescript
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
@@ -179,6 +227,7 @@ await server.connect(transport);
 ```
 
 ### SSE Transport (Web applications, remote servers)
+
 ```typescript
 import express from 'express';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
@@ -197,13 +246,17 @@ app.post('/messages', async (req, res) => {
 app.listen(3001);
 ```
 
-### Transport Selection
-| Transport | Use Case | Pros | Cons |
-|---|---|---|---|
-| Stdio | CLI tools, local MCP clients | Simple, no network | Local only |
-| SSE | Web apps, remote clients | Network-accessible, real-time | Requires HTTP server |
+## Phase 3: Hardening
 
-## Error Handling
+1. Add comprehensive error handling
+2. Implement rate limiting and timeouts
+3. Security review (input sanitization, permission checks)
+4. Write integration tests
+5. Document tools and resources for clients
+
+**STOP — All tests must pass and security review must be complete before deployment.**
+
+### Error Handling
 
 ```typescript
 server.tool('risky-operation', 'Performs an operation that might fail', {
@@ -225,7 +278,6 @@ server.tool('risky-operation', 'Performs an operation that might fail', {
         isError: true,
       };
     }
-    // Unexpected errors — log and return generic message
     console.error('Unexpected error:', error);
     return {
       content: [{ type: 'text', text: 'An unexpected error occurred. Please try again.' }],
@@ -236,34 +288,25 @@ server.tool('risky-operation', 'Performs an operation that might fail', {
 ```
 
 ### Error Handling Rules
-- Never expose stack traces to clients
-- Return `isError: true` for all error responses
-- Log unexpected errors server-side
-- Provide actionable error messages
-- Handle timeouts for external service calls
-- Validate all inputs before processing
 
-## Security Considerations
+| Rule | Why |
+|---|---|
+| Never expose stack traces to clients | Security risk |
+| Return `isError: true` for all errors | Client can distinguish success/failure |
+| Log unexpected errors server-side | Debugging and monitoring |
+| Provide actionable error messages | Client can self-correct |
+| Handle timeouts for external calls | Prevent hanging requests |
+| Validate all inputs before processing | Reject bad data early |
 
-### Input Validation
-- Validate all tool inputs with Zod schemas
-- Sanitize file paths (prevent path traversal: `../../../etc/passwd`)
-- Limit string lengths to prevent abuse
-- Validate URLs before fetching
-- Sanitize SQL/command injection vectors
+### Security Considerations
 
-### Permission Model
-- Principle of least privilege for file system access
-- Whitelist allowed directories and operations
-- Rate limit tool invocations
-- Log all tool calls for auditing
-- Separate read-only and write tools
-
-### Secrets
-- Never expose API keys in tool responses
-- Use environment variables for credentials
-- Rotate secrets regularly
-- Mask sensitive data in logs
+| Category | Rules |
+|---|---|
+| Input validation | Zod schemas, path traversal prevention, length limits |
+| Permission model | Least privilege, whitelist directories, separate read/write tools |
+| Secrets | Env vars only, never in responses, mask in logs, rotate regularly |
+| Rate limiting | Limit tool invocations per client |
+| Auditing | Log all tool calls with timestamps |
 
 ## Testing MCP Servers
 
@@ -309,6 +352,7 @@ describe('MCP Server', () => {
 ## Client Integration
 
 ### Claude Desktop Configuration
+
 ```json
 {
   "mcpServers": {
@@ -323,39 +367,30 @@ describe('MCP Server', () => {
 }
 ```
 
-## Project Structure
+## Anti-Patterns / Common Mistakes
 
-```
-src/
-  index.ts          # Server entry point
-  tools/
-    search.ts       # Tool implementations
-    create.ts
-  resources/
-    documents.ts    # Resource providers
-    config.ts
-  prompts/
-    review.ts       # Prompt templates
-  lib/
-    database.ts     # Shared utilities
-    validation.ts
-tests/
-  tools.test.ts
-  resources.test.ts
-package.json
-tsconfig.json
-```
+| Anti-Pattern | Why It Is Wrong | What to Do Instead |
+|---|---|---|
+| Tools that do too many things | Hard to use, hard to test | Split into focused single-purpose tools |
+| Missing input validation | Crashes, security holes | Always use Zod schemas |
+| Returning raw stack traces | Security risk, confusing for AI | Return `isError: true` with clean message |
+| No timeout on external calls | Hangs indefinitely | Set timeouts on all I/O |
+| Hardcoded secrets in source | Credential exposure | Use environment variables |
+| Tools without descriptions | Clients cannot discover purpose | Write clear descriptions |
+| Blocking event loop with sync ops | Server becomes unresponsive | Use async/await for all I/O |
+| No tests | Regressions go undetected | Test with InMemoryTransport |
 
-## Anti-Patterns
+## Integration Points
 
-- Tools that do too many things (split into focused tools)
-- Missing input validation (always use Zod schemas)
-- Returning raw error stack traces to clients
-- No timeout on external calls
-- Hardcoded secrets in source code
-- Tools without descriptions (clients cannot discover their purpose)
-- Blocking the event loop with synchronous operations
+| Skill | Integration |
+|---|---|
+| `senior-devops` | Containerize and deploy MCP servers |
+| `agent-development` | MCP servers provide tools for agents |
+| `security-review` | Security hardening of tool inputs/outputs |
+| `test-driven-development` | TDD for tool implementation |
+| `deployment` | CI/CD pipeline for MCP server releases |
+| `planning` | MCP server design is part of the implementation plan |
 
 ## Skill Type
 
-**RIGID** — All tools must have Zod-validated inputs and descriptive documentation. Error handling with `isError` flag is mandatory. Security review is required before deployment. Testing with in-memory transport is required.
+**FLEXIBLE** — Adapt project structure, transport choice, and tooling to the use case. Tool validation with Zod and error handling with `isError` are strongly recommended. Security review is recommended before production deployment.

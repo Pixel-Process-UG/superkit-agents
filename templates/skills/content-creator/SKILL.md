@@ -1,6 +1,11 @@
 ---
 name: content-creator
-description: When the user needs marketing copy, social media content, brand voice development, ad copy, newsletters, or persuasive writing for business audiences.
+description: >
+  Use when the user needs marketing copy, social media content, brand voice development,
+  ad copy, newsletters, or persuasive writing for business audiences.
+  Trigger conditions: social media post drafting, email campaign copy, landing page text,
+  ad copy creation, brand voice definition, content calendar planning,
+  headline writing, A/B test copy variations, newsletter composition.
 ---
 
 # Content Creator
@@ -9,35 +14,59 @@ description: When the user needs marketing copy, social media content, brand voi
 
 Create compelling marketing content across channels including social media, email campaigns, landing pages, ad copy, newsletters, and brand messaging. This skill covers brand voice development, audience targeting, copywriting frameworks (AIDA, PAS, BAB), platform-specific optimization, A/B testing copy, content calendars, and conversion-focused writing.
 
-## Process
+Apply this skill whenever content must persuade, engage, or convert an audience through a specific marketing channel.
+
+## Multi-Phase Process
 
 ### Phase 1: Brand and Audience Analysis
+
 1. Define or review the brand voice (tone, personality, values)
 2. Identify target audience personas (demographics, psychographics, pain points)
 3. Map the customer journey stage for this content
 4. Analyze competitor messaging and positioning
 5. Establish key differentiators and value propositions
 
+> **STOP — Do NOT create content without a defined brand voice and audience persona.**
+
 ### Phase 2: Content Strategy
+
 1. Determine content goal (awareness, engagement, conversion, retention)
 2. Select channel(s) and format(s)
 3. Identify primary and secondary keywords or themes
 4. Define call-to-action (CTA) for each piece
 5. Plan content cadence and publishing schedule
 
+> **STOP — Do NOT begin drafting without a clear goal and CTA for each piece.**
+
 ### Phase 3: Creation
-1. Draft using appropriate copywriting framework
-2. Write multiple headline/hook variations
+
+1. Draft using appropriate copywriting framework (see decision table)
+2. Write multiple headline/hook variations (minimum 3)
 3. Adapt tone and length for each platform
 4. Create supporting visual direction or copy for images
 5. Include relevant hashtags, mentions, or links
 
+> **STOP — Do NOT publish without reviewing against brand voice checklist and platform guidelines.**
+
 ### Phase 4: Optimization
+
 1. A/B test headlines, CTAs, and opening lines
 2. Review for brand voice consistency
 3. Check readability (aim for grade 6-8 for general audiences)
 4. Verify compliance (disclosures, disclaimers, regulations)
 5. Schedule or publish with tracking parameters (UTMs)
+
+## Copywriting Framework Decision Table
+
+| Situation | Framework | Why |
+|---|---|---|
+| Product launch, new feature announcement | AIDA | Builds from attention to action progressively |
+| Audience aware of pain, needs motivation | PAS | Amplifies urgency before presenting solution |
+| Transformation story, before/after | BAB | Visualizes the change your product enables |
+| Testimonial-driven, social proof heavy | 4Ps | Leverages proof as primary persuasion lever |
+| Short-form (tweets, ads under 100 chars) | Hook + CTA | No room for frameworks -- lead with value |
+| Email nurture sequence | PAS or BAB | Builds relationship over multiple touches |
+| Landing page hero section | AIDA | Maps directly to hero, benefits, proof, CTA sections |
 
 ## Copywriting Frameworks
 
@@ -92,6 +121,7 @@ Push:    Urgency or clear next step
 ## Platform-Specific Guidelines
 
 ### Social Media Character Limits and Best Practices
+
 | Platform | Ideal Length | Best Practices |
 |---|---|---|
 | Twitter/X | 70-100 chars (engagement sweet spot) | Questions, threads, polls; 1-2 hashtags |
@@ -147,6 +177,7 @@ CTA: Save this post / Tag someone who needs this
 ## Brand Voice Framework
 
 ### Voice Attributes Matrix
+
 | Attribute | We Are | We Are Not | Example |
 |---|---|---|---|
 | Tone | Confident | Arrogant | "Here's what works" not "We're the best" |
@@ -177,6 +208,7 @@ Stop [Bad Practice]. Start [Good Practice]. Here's How.
 ```
 
 ### Headline Testing Criteria
+
 | Factor | Weight | Evaluation |
 |---|---|---|
 | Clarity | 30% | Reader knows what they'll get |
@@ -236,18 +268,39 @@ Here's what [Customer/Number] are saying:
 | Thu | Instagram | Carousel | Quick tips | Save | Design |
 | Fri | Email | Newsletter | Weekly roundup | Read more | Template |
 
-## Anti-Patterns
+## Anti-Patterns / Common Mistakes
 
-- Writing for the brand instead of for the audience
-- Using the same copy across all platforms without adaptation
-- Burying the CTA at the end of long copy
-- Leading with features instead of benefits
-- Using corporate jargon ("leverage", "synergy", "paradigm shift")
-- Publishing without a clear goal for each piece of content
-- Ignoring character limits and platform-specific formatting
-- Writing clickbait headlines that the content doesn't deliver on
-- Not testing multiple variations of headlines and CTAs
-- Neglecting to include tracking parameters for attribution
+| Anti-Pattern | Why It Fails | What To Do Instead |
+|---|---|---|
+| Writing for the brand, not the audience | Self-serving content gets ignored | Lead with audience pain points and desires |
+| Same copy across all platforms | Ignores platform culture and format | Adapt tone, length, and structure per channel |
+| Burying the CTA in long copy | Reader never reaches the ask | Put CTA early or make it impossible to miss |
+| Leading with features, not benefits | "What it does" doesn't motivate action | Translate features into outcomes |
+| Corporate jargon ("leverage", "synergy") | Feels inauthentic and impersonal | Use plain language a friend would use |
+| No clear goal per content piece | Impossible to measure success | Define one measurable goal before drafting |
+| Clickbait headlines | Erodes trust when content doesn't deliver | Promise only what the content provides |
+| No A/B testing | Missing optimization opportunities | Test 2-3 headline and CTA variations |
+| Missing UTM tracking parameters | Cannot attribute traffic to content | Add UTMs to every outbound link |
+| Publishing without compliance check | Legal and regulatory risk | Review disclosures, disclaimers, and regulations |
+
+## Anti-Rationalization Guards
+
+- Do NOT skip brand voice definition because "we know our voice" -- document it in the matrix.
+- Do NOT publish content without a defined CTA, even for "awareness" posts.
+- Do NOT reuse the same copy across platforms without adaptation.
+- Do NOT write headlines without generating at least 3 variations to compare.
+- Do NOT skip the readability check -- grade 6-8 is the target for general audiences.
+
+## Integration Points
+
+| Skill | How It Connects |
+|---|---|
+| `seo-optimizer` | Keywords and meta tag strategy inform content headlines and structure |
+| `content-research-writer` | Research findings provide evidence for marketing claims |
+| `email-composer` | Brand voice and templates feed directly into email campaigns |
+| `llm-as-judge` | Evaluate content quality against brand voice rubric |
+| `frontend-ui-design` | Landing page copy must align with visual hierarchy and CTA placement |
+| `senior-prompt-engineer` | AI-generated copy benefits from structured prompt patterns |
 
 ## Skill Type
 

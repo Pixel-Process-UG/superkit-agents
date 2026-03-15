@@ -1,6 +1,11 @@
 ---
 name: xlsx-processing
-description: When the user needs Excel file manipulation — reading, writing, formulas, charts, conditional formatting, data validation, pivot tables, or large file handling.
+description: >
+  Use when the user needs Excel file manipulation — reading, writing, formulas, charts,
+  conditional formatting, data validation, pivot tables, or large file handling.
+  Trigger conditions: create Excel reports programmatically, read spreadsheet data,
+  add formulas or charts, apply conditional formatting, perform data validation,
+  generate pivot tables, handle CSV import/export, process large datasets in Excel format.
 ---
 
 # XLSX Processing
@@ -9,28 +14,50 @@ description: When the user needs Excel file manipulation — reading, writing, f
 
 Manipulate Excel files programmatically using openpyxl for rich formatting and pandas for data analysis. This skill covers reading/writing spreadsheets, formulas, charts, conditional formatting, data validation, pivot table generation, CSV import/export, and strategies for handling large files.
 
-## Process
+Apply this skill whenever Excel files need to be created, read, transformed, or enriched through code rather than manual editing.
+
+## Multi-Phase Process
 
 ### Phase 1: Requirements
+
 1. Determine operation (read, write, transform, report)
 2. Identify data sources and volume
 3. Define formatting and formula requirements
 4. Plan sheet structure and naming
 5. Assess performance needs (row count, file size)
 
+> **STOP — Do NOT begin implementation until you know the row count and whether formatting is needed (this determines library choice).**
+
 ### Phase 2: Implementation
-1. Select library (openpyxl for formatting, pandas for data)
+
+1. Select library (see decision table)
 2. Implement data loading and transformation
 3. Apply formatting, formulas, and validation
 4. Add charts and conditional formatting
 5. Optimize for file size and memory
 
+> **STOP — Do NOT skip memory optimization for files exceeding 10,000 rows.**
+
 ### Phase 3: Validation
+
 1. Open in Excel, LibreOffice, and Google Sheets
 2. Verify formulas calculate correctly
 3. Check formatting renders consistently
 4. Test with edge cases (empty data, max rows)
 5. Validate data accuracy
+
+## Library Decision Table
+
+| Scenario | Library | Why |
+|---|---|---|
+| Rich formatting (colors, borders, fonts) | openpyxl | Full formatting API |
+| Data analysis, aggregation, pivots | pandas | DataFrame operations |
+| Formatted report from data analysis | pandas + openpyxl | Combine strengths |
+| Reading data only, no formatting needed | pandas | Simplest API |
+| Large file (> 10K rows), write-heavy | openpyxl write_only | Streaming writes, low memory |
+| Large file (> 10K rows), read-heavy | openpyxl read_only | Streaming reads, low memory |
+| CSV to/from Excel conversion | pandas | One-liner operations |
+| Charts in spreadsheet | openpyxl | Chart API with full control |
 
 ## openpyxl Patterns
 
@@ -298,36 +325,47 @@ for chunk in pd.read_csv('large.csv', chunksize=chunk_size):
 wb.save('output.xlsx')
 ```
 
-### Performance Tips
-| Rows | Strategy |
+### Performance Decision Table
+
+| Rows | Strategy | Notes |
+|---|---|---|
+| < 10,000 | Standard openpyxl or pandas | Full formatting available |
+| 10K - 100K | write_only / read_only mode, chunked | Limited formatting in write_only |
+| 100K - 1M | write_only mode, consider CSV instead | Near Excel row limit |
+| > 1M | Use CSV or Parquet, not XLSX | Excel limit: 1,048,576 rows |
+
+## Anti-Patterns / Common Mistakes
+
+| Anti-Pattern | Why It Fails | What To Do Instead |
+|---|---|---|
+| openpyxl for pure data analysis | Verbose and slow for analytics | Use pandas for data operations |
+| Loading large files into memory | Memory exhaustion, crashes | Use read_only / write_only modes |
+| Hardcoding row/column numbers | Breaks when data shape changes | Calculate from data length |
+| Inconsistent date formats | Dates render as numbers or strings | Set number_format explicitly |
+| Not closing read_only workbooks | Resource leaks | Always call `wb.close()` or use context manager |
+| Using .xls format | Legacy, limited, security risks | Always use .xlsx |
+| Formatting cells one by one | Extremely slow for large ranges | Apply styles to ranges or use named styles |
+| Not testing in actual Excel | Features render differently | Test in Excel, LibreOffice, and Google Sheets |
+| Forgetting to freeze header row | Poor UX when scrolling large data | Always freeze panes for data sheets |
+
+## Anti-Rationalization Guards
+
+- Do NOT use openpyxl for data analysis that pandas handles in one line.
+- Do NOT skip the row count assessment -- it determines your entire approach.
+- Do NOT assume standard mode works for files over 10K rows -- use streaming modes.
+- Do NOT test only in one spreadsheet application -- formatting varies.
+- Do NOT forget to close workbooks opened in read_only mode.
+
+## Integration Points
+
+| Skill | How It Connects |
 |---|---|
-| < 10,000 | Standard openpyxl or pandas |
-| 10K - 100K | write_only mode, chunked reading |
-| 100K - 1M | write_only mode, consider CSV instead |
-| > 1M | Use CSV/Parquet, not XLSX (Excel limit: 1,048,576 rows) |
-
-## Quality Checklist
-
-- [ ] File opens in Excel, LibreOffice, and Google Sheets
-- [ ] Formulas calculate correctly
-- [ ] Charts render with correct data ranges
-- [ ] Column widths accommodate content
-- [ ] Number formatting is correct (decimals, currency, dates)
-- [ ] Headers are frozen for scrolling
-- [ ] Data validation prevents invalid entries
-- [ ] Conditional formatting highlights correct cells
-- [ ] Sheet names are descriptive and valid (< 31 chars, no special chars)
-
-## Anti-Patterns
-
-- Using openpyxl for pure data analysis (use pandas)
-- Loading entire large files into memory (use read_only/write_only)
-- Hardcoding row/column numbers (calculate from data)
-- Not handling date formats consistently
-- Forgetting to close workbooks in read_only mode
-- Using .xls format (use .xlsx)
-- Formatting every cell individually (use styles and apply to ranges)
-- Not testing with actual Excel (some features render differently)
+| `pdf-processing` | Excel data feeds into PDF report generation |
+| `docx-processing` | Excel data populates Word document tables |
+| `email-composer` | Generated spreadsheets attach to professional emails |
+| `file-organizer` | Output file naming and directory structure conventions |
+| `database-schema-design` | Database exports to Excel for reporting |
+| `deployment` | Automated report generation in CI/CD pipelines |
 
 ## Skill Type
 

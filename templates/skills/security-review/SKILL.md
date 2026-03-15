@@ -1,45 +1,76 @@
 ---
 name: security-review
-description: "Use when reviewing code for security vulnerabilities, implementing authentication or authorization, handling user input, managing secrets, or auditing dependencies for known CVEs"
+description: "Use when reviewing code for security vulnerabilities, implementing authentication or authorization, handling user input, managing secrets, or auditing dependencies for known CVEs. Triggers: auth implementation, input handling, secrets management, dependency audit, pre-deployment security check, OWASP compliance review."
 ---
 
 # Security Review
 
-## Purpose
+## Overview
 
-Systematically review code for security vulnerabilities, apply secure coding patterns, and ensure applications follow defense-in-depth principles.
+Systematically review code for security vulnerabilities, apply secure coding patterns, and ensure applications follow defense-in-depth principles. This skill covers the OWASP Top 10, authentication pattern selection, input validation, secrets management, dependency auditing, security headers, and threat modeling.
 
-## When to Use
+**Announce at start:** "I'm using the security-review skill to assess security posture."
 
-- Reviewing code changes for security issues
-- Implementing authentication or authorization
-- Handling user-supplied input
-- Managing secrets and credentials
-- Auditing third-party dependencies
-- Preparing for a security assessment
+---
 
-## OWASP Top 10 Checklist (2021)
+## Phase 1: Scope and Threat Assessment
 
-| # | Category | Key Check |
-|---|----------|-----------|
-| 1 | **Broken Access Control** | Verify authorization on every endpoint, deny by default |
-| 2 | **Cryptographic Failures** | No plaintext secrets, use strong algorithms (AES-256, bcrypt) |
-| 3 | **Injection** | Parameterized queries, no string concatenation for SQL/commands |
-| 4 | **Insecure Design** | Threat model exists, rate limiting, abuse cases considered |
-| 5 | **Security Misconfiguration** | No defaults in production, minimal permissions, error messages leak nothing |
-| 6 | **Vulnerable Components** | Dependencies audited, no known CVEs, update policy in place |
-| 7 | **Auth Failures** | MFA available, passwords hashed, session management secure |
-| 8 | **Data Integrity Failures** | Verify signatures, validate CI/CD pipeline integrity |
-| 9 | **Logging Failures** | Log auth events, access control failures, input validation failures |
-| 10 | **SSRF** | Validate/allowlist URLs, no internal network access from user input |
+**Goal:** Identify the attack surface and prioritize review areas.
 
-See [owasp-checklist.md](./owasp-checklist.md) for detailed vulnerability patterns and code examples.
+### Actions
 
-## Auth Pattern Selection Guide
+1. Identify all user-facing endpoints and input surfaces
+2. Map authentication and authorization boundaries
+3. List external dependencies and their trust levels
+4. Identify sensitive data flows (PII, credentials, payment)
+5. Determine compliance requirements (SOC 2, GDPR, HIPAA)
 
-### JWT (JSON Web Tokens)
+### STOP — Do NOT proceed to Phase 2 until:
+- [ ] Attack surface is mapped
+- [ ] Sensitive data flows are identified
+- [ ] Compliance requirements are known
 
-**Use when:** stateless APIs, microservices, mobile backends
+---
+
+## Phase 2: OWASP Top 10 Audit
+
+**Goal:** Systematically check against each OWASP category.
+
+### OWASP Top 10 Checklist (2021)
+
+| # | Category | Key Check | Pass/Fail |
+|---|----------|-----------|-----------|
+| 1 | **Broken Access Control** | Authorization verified on every endpoint, deny by default | |
+| 2 | **Cryptographic Failures** | No plaintext secrets, strong algorithms (AES-256, bcrypt) | |
+| 3 | **Injection** | Parameterized queries, no string concatenation for SQL/commands | |
+| 4 | **Insecure Design** | Threat model exists, rate limiting, abuse cases considered | |
+| 5 | **Security Misconfiguration** | No defaults in production, minimal permissions, error messages leak nothing | |
+| 6 | **Vulnerable Components** | Dependencies audited, no known CVEs, update policy in place | |
+| 7 | **Auth Failures** | MFA available, passwords hashed, session management secure | |
+| 8 | **Data Integrity Failures** | Verify signatures, validate CI/CD pipeline integrity | |
+| 9 | **Logging Failures** | Log auth events, access control failures, input validation failures | |
+| 10 | **SSRF** | Validate/allowlist URLs, no internal network access from user input | |
+
+### STOP — Do NOT proceed to Phase 3 until:
+- [ ] All 10 categories are checked
+- [ ] Findings are documented with severity
+
+---
+
+## Phase 3: Deep Review by Category
+
+**Goal:** Apply detailed security patterns to identified issues.
+
+### Auth Pattern Selection Table
+
+| Pattern | Use When | Key Requirements |
+|---------|----------|-----------------|
+| **JWT** | Stateless APIs, microservices, mobile backends | RS256 for multi-service; access token 15min max; HttpOnly cookies |
+| **Session-based** | Traditional web apps, server-rendered pages | Server-side storage; HttpOnly + Secure + SameSite cookies; CSRF tokens |
+| **OAuth2/OIDC** | Third-party login, SSO, delegated auth | Authorization Code + PKCE; validate ID token claims; server-side token storage |
+| **Passkeys/WebAuthn** | Passwordless, high-security apps | Phishing-resistant; store public keys only; support multiple per account |
+
+### JWT Security Checklist
 
 | Aspect | Guidance |
 |--------|----------|
@@ -49,42 +80,9 @@ See [owasp-checklist.md](./owasp-checklist.md) for detailed vulnerability patter
 | Refresh | Rotate refresh tokens on use, invalidate on logout |
 | Payload | Minimal claims (sub, exp, iat, roles). No sensitive data |
 
-### Session-Based
+### Input Validation Patterns
 
-**Use when:** traditional web apps, server-rendered pages
-
-| Aspect | Guidance |
-|--------|----------|
-| Storage | Server-side (Redis, database). Cookie holds session ID only |
-| Cookie flags | HttpOnly, Secure, SameSite=Lax (or Strict) |
-| CSRF | SameSite cookie + CSRF token for state-changing requests |
-| Expiry | Absolute timeout (24h) + idle timeout (30min) |
-| Regeneration | New session ID after login (prevent fixation) |
-
-### OAuth2 / OIDC
-
-**Use when:** third-party login, SSO, delegated authorization
-
-- Use Authorization Code flow with PKCE (not Implicit flow)
-- Validate ID token signature and claims (iss, aud, exp)
-- Store tokens server-side when possible
-- Implement proper logout (revoke tokens, clear sessions)
-
-### Passkeys / WebAuthn
-
-**Use when:** passwordless authentication, high-security applications
-
-- Phishing-resistant by design
-- Store credential public keys, never private keys
-- Support multiple passkeys per account
-- Provide account recovery paths
-
-## Input Validation Patterns
-
-### Allow-List Validation
-
-Validate against known-good values, not known-bad:
-
+**Allow-List Validation** (always prefer over block-list):
 ```python
 # Good: allow-list
 ALLOWED_SORT_FIELDS = {'name', 'created_at', 'price'}
@@ -95,45 +93,35 @@ if sort_field not in ALLOWED_SORT_FIELDS:
 BLOCKED_CHARS = ['<', '>', '"']
 ```
 
-### Parameterized Queries
-
-Never concatenate user input into queries:
-
+**Parameterized Queries** (never concatenate user input):
 ```python
 # Good: parameterized
 cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
 
-# Bad: string concatenation (SQL injection)
+# Bad: SQL injection vulnerability
 cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
-```
-
-This applies to all query languages: SQL, NoSQL, LDAP, GraphQL, ORM query builders.
-
-### HTML Sanitization
-
-For user-generated HTML content:
-
-```javascript
-// Use DOMPurify for client-side sanitization
-import DOMPurify from 'dompurify';
-const clean = DOMPurify.sanitize(userHtml);
-
-// Or sanitize-html for server-side
-const sanitizeHtml = require('sanitize-html');
-const clean = sanitizeHtml(userHtml, { allowedTags: ['b', 'i', 'em', 'strong', 'p'] });
 ```
 
 ### File Upload Validation
 
 - Validate MIME type server-side (not just extension)
 - Enforce file size limits
-- Generate random filenames (never use user-supplied names for storage)
+- Generate random filenames (never use user-supplied names)
 - Store uploads outside the web root
 - Scan for malware if accepting from untrusted users
 
-## Secrets Management
+### STOP — Do NOT proceed to Phase 4 until:
+- [ ] All identified issues have remediation recommendations
+- [ ] Auth patterns are correctly applied
+- [ ] Input validation is comprehensive
 
-### Rules
+---
+
+## Phase 4: Infrastructure and Dependency Hardening
+
+**Goal:** Secure the deployment environment and supply chain.
+
+### Secrets Management Rules
 
 | Environment | Method |
 |-------------|--------|
@@ -141,29 +129,20 @@ const clean = sanitizeHtml(userHtml, { allowedTags: ['b', 'i', 'em', 'strong', '
 | CI/CD | Pipeline secrets (GitHub Secrets, GitLab CI vars) |
 | Production | Secrets manager (AWS Secrets Manager, Vault, GCP Secret Manager) |
 
-### Never
+### Secrets Never List
 
-- Hard-code secrets in source code
-- Commit `.env` files to git
-- Log secrets (even at debug level)
-- Pass secrets as command-line arguments (visible in process lists)
-- Use the same secrets across environments
+- Never hard-code secrets in source code
+- Never commit `.env` files to git
+- Never log secrets (even at debug level)
+- Never pass secrets as command-line arguments
+- Never use the same secrets across environments
 
-### Rotation
-
-- API keys: rotate every 90 days minimum
-- Database passwords: rotate every 90 days
-- Encryption keys: rotate annually, support key versioning
-- After any suspected compromise: rotate immediately
-
-## Dependency Auditing
-
-### Automated Scanning
+### Dependency Auditing Commands
 
 ```bash
 # Node.js
 npm audit
-npx socket-security audit  # supply-chain analysis
+npx socket-security audit
 
 # Python
 pip-audit
@@ -176,14 +155,7 @@ govulncheck ./...
 cargo audit
 ```
 
-### Continuous Monitoring
-
-- Enable Dependabot or Renovate for automatic update PRs
-- Use Snyk or Socket.dev for deeper supply-chain analysis
-- Pin dependency versions (lock files committed)
-- Review changelogs before updating major versions
-
-## Security Headers
+### Security Headers
 
 | Header | Value | Purpose |
 |--------|-------|---------|
@@ -194,28 +166,88 @@ cargo audit
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | Controls referer leakage |
 | `Permissions-Policy` | Disable unused APIs | Limits browser feature access |
 
-### CORS
+### CORS Rules
 
 - Never use `Access-Control-Allow-Origin: *` with credentials
 - Allowlist specific origins
 - Restrict allowed methods and headers to what is needed
-- Set `Access-Control-Max-Age` to cache preflight responses
 
-## Threat Modeling (STRIDE)
+---
 
-For new features or significant changes, walk through each category:
+## Phase 5: Threat Modeling (STRIDE)
 
-| Threat | Question |
-|--------|----------|
-| **Spoofing** | Can an attacker pretend to be someone else? |
-| **Tampering** | Can data be modified without detection? |
-| **Repudiation** | Can a user deny performing an action? (Is it logged?) |
-| **Information Disclosure** | Can sensitive data leak through errors, logs, or side channels? |
-| **Denial of Service** | Can the system be overwhelmed? Rate limits in place? |
-| **Elevation of Privilege** | Can a user gain permissions they should not have? |
+**Goal:** For new features or significant changes, walk through each threat category.
+
+| Threat | Question | Mitigation |
+|--------|----------|-----------|
+| **Spoofing** | Can an attacker pretend to be someone else? | Strong authentication, MFA |
+| **Tampering** | Can data be modified without detection? | Integrity checks, signatures |
+| **Repudiation** | Can a user deny performing an action? | Audit logging |
+| **Information Disclosure** | Can sensitive data leak through errors, logs, or side channels? | Error sanitization, encryption |
+| **Denial of Service** | Can the system be overwhelmed? | Rate limits, resource quotas |
+| **Elevation of Privilege** | Can a user gain permissions they should not have? | Least privilege, RBAC |
 
 For each identified threat:
 1. Document the threat and attack vector
 2. Assess likelihood and impact
 3. Define mitigations
 4. Verify mitigations are implemented and tested
+
+---
+
+## Decision Table: Security Review Depth
+
+| Change Type | Review Depth | Focus Areas |
+|-------------|-------------|-------------|
+| Auth/session changes | Full STRIDE + OWASP | All categories |
+| User input handling | Injection + validation focus | OWASP 1, 3, 10 |
+| Dependency update | CVE scan + changelog review | OWASP 6 |
+| API endpoint addition | Access control + input validation | OWASP 1, 3, 5 |
+| Config/infrastructure | Secrets + headers + misconfig | OWASP 2, 5 |
+| File upload feature | Injection + SSRF + malware | OWASP 3, 10 |
+
+---
+
+## Anti-Patterns / Common Mistakes
+
+| Anti-Pattern | Why It Is Wrong | Correct Approach |
+|-------------|----------------|-----------------|
+| Client-side only validation | Easily bypassed | Always validate server-side |
+| Storing tokens in localStorage | XSS can steal them | Use HttpOnly cookies |
+| Block-list input validation | Always incomplete | Use allow-list validation |
+| Generic error messages in production | May leak internal details | Sanitize errors, log details server-side |
+| Same secrets across environments | Breach of one compromises all | Unique secrets per environment |
+| Ignoring dependency CVEs | Known vulnerabilities are actively exploited | Audit and update regularly |
+| CORS wildcard with credentials | Defeats CORS protection entirely | Allowlist specific origins |
+| Logging sensitive data | Log exposure creates data breach | Never log secrets, PII, or tokens |
+
+---
+
+## Secrets Rotation Schedule
+
+| Secret Type | Rotation Frequency | After Suspected Compromise |
+|------------|-------------------|--------------------------|
+| API keys | Every 90 days | Immediately |
+| Database passwords | Every 90 days | Immediately |
+| Encryption keys | Annually (support key versioning) | Immediately |
+| JWT signing keys | Every 6 months | Immediately |
+| OAuth client secrets | Every 90 days | Immediately |
+
+---
+
+## Integration Points
+
+| Skill | Relationship |
+|-------|-------------|
+| `code-review` | Security findings are Critical category issues |
+| `senior-backend` | Backend hardening follows security review findings |
+| `senior-fullstack` | Auth implementation follows security patterns |
+| `acceptance-testing` | Security requirements become acceptance criteria |
+| `performance-optimization` | Rate limiting serves both security and performance |
+| `systematic-debugging` | Security incidents trigger debugging workflow |
+
+---
+
+## Skill Type
+
+**FLEXIBLE** — Adapt the depth of review to the change type using the decision table. The OWASP checklist and STRIDE analysis are strongly recommended for any auth or input-handling changes. Secrets management rules are non-negotiable.

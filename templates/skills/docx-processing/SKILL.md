@@ -1,6 +1,11 @@
 ---
 name: docx-processing
-description: When the user needs Word document generation, template filling, formatting, mail merge, or DOCX manipulation using python-docx or docxtpl.
+description: >
+  Use when the user needs Word document generation, template filling, formatting,
+  mail merge, or DOCX manipulation using python-docx or docxtpl.
+  Trigger conditions: generate Word documents programmatically, fill document templates
+  with data, apply formatting (headings, tables, images, headers/footers),
+  perform mail merge operations, convert DOCX to PDF, manage document styles.
 ---
 
 # DOCX Processing
@@ -9,28 +14,48 @@ description: When the user needs Word document generation, template filling, for
 
 Generate, manipulate, and template Word documents programmatically. This skill covers python-docx for direct document creation, docxtpl for Jinja2-based template filling, formatting control (headings, tables, images, headers/footers), mail merge operations, style management, and conversion strategies.
 
-## Process
+Apply this skill whenever Word documents need to be created, populated, or transformed through code rather than manual editing.
+
+## Multi-Phase Process
 
 ### Phase 1: Requirements
+
 1. Determine if creating from scratch or filling a template
 2. Identify document structure (sections, headers, tables, images)
 3. Define data sources (JSON, CSV, database, API)
 4. Plan styling requirements (fonts, colors, margins)
 5. Determine output format (DOCX, PDF conversion needed)
 
+> **STOP — Do NOT begin implementation until the approach (scratch vs template) is decided and data sources are confirmed.**
+
 ### Phase 2: Implementation
+
 1. Set up document template or create from scratch
 2. Implement data binding and content generation
 3. Apply formatting and styles
 4. Add headers, footers, and page numbers
 5. Handle images and embedded objects
 
+> **STOP — Do NOT skip to validation until all document sections are implemented.**
+
 ### Phase 3: Validation
+
 1. Verify document renders correctly in Word/LibreOffice
 2. Check formatting consistency across pages
 3. Validate data accuracy in generated documents
 4. Test with edge cases (long text, missing data, special characters)
 5. Verify PDF conversion if required
+
+## Approach Decision Table
+
+| Scenario | Approach | Library | Why |
+|---|---|---|---|
+| One-off report generation | From scratch | python-docx | Full programmatic control |
+| Recurring reports with fixed layout | Template | docxtpl | Design layout in Word, fill with data |
+| Bulk letter generation (mail merge) | Template | docxtpl | One template, many outputs |
+| Complex formatting, custom styles | From scratch | python-docx | Direct access to document model |
+| Non-technical users design template | Template | docxtpl | Users edit in Word, developers bind data |
+| PDF output required | Either + conversion | libreoffice / docx2pdf | Post-processing step |
 
 ## python-docx Patterns
 
@@ -82,6 +107,8 @@ doc.save('report.docx')
 ### Headers and Footers
 ```python
 from docx.enum.section import WD_ORIENT
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 
 section = doc.sections[0]
 
@@ -107,7 +134,6 @@ footer_para = footer.paragraphs[0]
 footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
 # Add page number field
-from docx.oxml.ns import qn
 run = footer_para.add_run()
 fldChar = OxmlElement('w:fldChar')
 fldChar.set(qn('w:fldCharType'), 'begin')
@@ -283,13 +309,14 @@ subprocess.run([
 from docx2pdf import convert
 convert('input.docx', 'output.pdf')
 
-# Option 3: python-pptx + reportlab (for full control)
-# Generate PDF directly with reportlab instead of converting
+# Option 3: Generate PDF directly with reportlab for full control
 ```
 
 ## Error Handling
 
 ```python
+import jinja2
+
 def safe_generate_document(template_path, context, output_path):
     try:
         tpl = DocxTemplate(template_path)
@@ -299,32 +326,46 @@ def safe_generate_document(template_path, context, output_path):
     except jinja2.UndefinedError as e:
         print(f"Missing template variable: {e}")
         return False
+    except FileNotFoundError as e:
+        print(f"Template not found: {e}")
+        return False
     except Exception as e:
         print(f"Document generation failed: {e}")
         return False
 ```
 
-## Quality Checklist
+## Anti-Patterns / Common Mistakes
 
-- [ ] Document opens correctly in Word, LibreOffice, and Google Docs
-- [ ] Fonts render consistently (use common system fonts)
-- [ ] Tables fit within page margins
-- [ ] Images are properly sized and positioned
-- [ ] Headers/footers appear on all pages
-- [ ] Page numbers are correct
-- [ ] Special characters render properly (Unicode)
-- [ ] Empty/missing data handled gracefully (no blank lines)
-- [ ] Long text wraps properly in table cells
+| Anti-Pattern | Why It Fails | What To Do Instead |
+|---|---|---|
+| Hardcoding font sizes instead of styles | Inconsistent formatting, hard to maintain | Define styles once, apply everywhere |
+| Not handling missing template variables | Runtime crashes on incomplete data | Use `jinja2.Undefined` or default filters |
+| Huge tables without pagination | Unreadable output, broken layouts | Break tables across pages or summarize |
+| Absolute image paths | Breaks portability across environments | Use relative paths or embed images |
+| Not testing with different Word versions | Formatting breaks silently | Test in Word, LibreOffice, and Google Docs |
+| Modifying XML directly when API exists | Fragile, version-dependent code | Use python-docx API methods first |
+| All direct formatting, no styles | Impossible to maintain consistency | Create and apply named styles |
+| Ignoring Unicode characters | Mojibake in generated documents | Test with accented characters, CJK, symbols |
+| Not re-loading template in mail merge | Corrupted output after first render | Re-instantiate DocxTemplate per iteration |
 
-## Anti-Patterns
+## Anti-Rationalization Guards
 
-- Hardcoding font sizes in points instead of using styles
-- Not handling missing template variables
-- Generating huge tables without pagination consideration
-- Using absolute image paths (breaks portability)
-- Not testing with different Word versions
-- Modifying python-docx XML directly when API methods exist
-- Creating documents without styles (all direct formatting)
+- Do NOT skip the approach decision (scratch vs template) -- it determines your entire implementation.
+- Do NOT generate documents without testing in at least Word and one alternative viewer.
+- Do NOT ignore missing data -- handle empty/null fields with defaults or conditional sections.
+- Do NOT skip error handling in production document generation pipelines.
+- Do NOT hardcode formatting when styles can be used instead.
+
+## Integration Points
+
+| Skill | How It Connects |
+|---|---|
+| `pdf-processing` | DOCX-to-PDF conversion, or choosing PDF generation directly |
+| `xlsx-processing` | Data from Excel feeds into document generation contexts |
+| `email-composer` | Generated documents attach to professional emails |
+| `content-research-writer` | Research content formatted into whitepapers and reports |
+| `file-organizer` | Output file naming and directory structure conventions |
+| `deployment` | Document generation pipelines in CI/CD or server environments |
 
 ## Skill Type
 
