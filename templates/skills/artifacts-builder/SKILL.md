@@ -1,6 +1,10 @@
 ---
 name: artifacts-builder
-description: When the user needs standalone HTML/CSS/JS artifacts — interactive demos, prototypes, single-file applications, or visual tools that run independently in a browser.
+description: >
+  Use when the user needs standalone HTML/CSS/JS artifacts — interactive demos, prototypes, single-file
+  applications, or visual tools that run independently in a browser. Triggers: user says "artifact",
+  "demo", "prototype", "single-file app", "HTML tool", "interactive widget", "standalone page",
+  building something that runs in a browser without a build step.
 ---
 
 # Artifacts Builder
@@ -9,32 +13,84 @@ description: When the user needs standalone HTML/CSS/JS artifacts — interactiv
 
 Generate self-contained, production-quality HTML/CSS/JS artifacts that run in any modern browser without a build step. Each artifact is a single file (or minimal file set) containing everything needed for an interactive demo, prototype, data visualization, or utility tool. Emphasis on progressive enhancement, responsive design, and clean code.
 
-## Process
+## Phase 1: Scope Definition
 
-### Phase 1: Scope Definition
 1. Clarify the artifact's purpose (demo, prototype, tool, visualization)
 2. Determine interactivity level (static, interactive, data-driven)
 3. Identify required dependencies (none, CDN-loaded, embedded)
 4. Define responsive requirements (mobile, desktop, both)
 5. Set constraints (file size, browser support, offline capability)
 
-### Phase 2: Architecture
+**STOP — Confirm scope and constraints with user before architecture decisions.**
+
+### Artifact Type Decision Table
+
+| Purpose | Complexity | Dependencies | Example |
+|---|---|---|---|
+| Static demo | Low | None | Product mockup, landing page |
+| Interactive widget | Medium | None or Alpine.js | Calculator, form builder |
+| Data visualization | Medium-High | D3.js or Chart.js | Dashboard, chart explorer |
+| Prototype | Medium | Alpine.js or Petite-Vue | Clickable UI prototype |
+| Utility tool | Medium-High | Varies | JSON formatter, color picker |
+| Generative art | Medium | None | Canvas animation, pattern generator |
+| Presentation | Medium | None or Mermaid | Slide deck, diagram viewer |
+
+## Phase 2: Architecture
+
 1. Choose single-file or multi-file approach
 2. Select CDN dependencies (if any)
 3. Plan component structure within the file
 4. Define state management approach
 5. Plan progressive enhancement layers
 
-### Phase 3: Implementation
+**STOP — Present architecture and dependency choices for approval.**
+
+### Architecture Decision Table
+
+| Constraint | Single-File | Multi-File |
+|---|---|---|
+| Easy sharing (email, paste) | Yes | No |
+| File size < 100KB | Yes | Either |
+| Multiple pages/views | Possible (SPA) | Better |
+| Team collaboration | Difficult | Better |
+| Offline use | Yes (self-contained) | Needs bundling |
+| SEO requirements | N/A | N/A (artifacts are tools) |
+
+### Dependency Decision Table
+
+| Need | Recommended | CDN URL | Size |
+|---|---|---|---|
+| Lightweight reactivity | Alpine.js | `cdn.jsdelivr.net/npm/alpinejs@3` | ~15KB |
+| Minimal Vue-like | Petite-Vue | `unpkg.com/petite-vue` | ~6KB |
+| Charts | Chart.js | `cdn.jsdelivr.net/npm/chart.js@4` | ~65KB |
+| Data visualization | D3.js | `cdn.jsdelivr.net/npm/d3@7` | ~90KB |
+| Diagrams | Mermaid | `cdn.jsdelivr.net/npm/mermaid@10` | ~120KB |
+| CSS framework (proto) | Tailwind Play CDN | `cdn.tailwindcss.com` | Runtime |
+| Icons | Lucide | `unpkg.com/lucide@latest` | On-demand |
+| No dependency needed | Vanilla JS | N/A | 0KB |
+
+### CDN Usage Rules
+
+| Rule | Rationale |
+|---|---|
+| Pin to major version (`@3`, `@7`) | Prevent breaking changes |
+| Maximum 3 CDN dependencies | Keep artifacts lightweight |
+| Add `integrity` and `crossorigin` | Security against CDN compromise |
+| Provide graceful degradation | Work if CDN fails |
+| Prefer smaller alternatives | Alpine over React, Petite-Vue over Vue |
+
+## Phase 3: Implementation
+
 1. Build semantic HTML structure
 2. Add CSS (inline `<style>` or embedded)
 3. Implement JavaScript functionality
 4. Add error handling and fallbacks
 5. Test across viewports and browsers
 
-## Single-File Architecture
+**STOP — Verify the artifact works correctly before delivering to user.**
 
 ### Template Structure
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -92,48 +148,10 @@ Generate self-contained, production-quality HTML/CSS/JS artifacts that run in an
 </html>
 ```
 
-## CDN Dependencies (Preferred Sources)
+### Responsive Design Patterns
 
-### Utility Libraries
-```html
-<!-- Alpine.js — lightweight reactivity -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+#### Container-Based Layout
 
-<!-- Petite-Vue — minimal Vue-like reactivity -->
-<script src="https://unpkg.com/petite-vue" defer init></script>
-```
-
-### Visualization
-```html
-<!-- D3.js -->
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-
-<!-- Mermaid — diagrams -->
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-```
-
-### Styling
-```html
-<!-- Tailwind CSS (Play CDN — prototyping only) -->
-<script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
-```
-
-### Rules for CDN Usage
-1. Always pin to a major version (`@3`, `@7`, not `@latest` in production)
-2. Maximum 3 CDN dependencies per artifact
-3. Add `integrity` and `crossorigin` attributes for security
-4. Provide graceful degradation if CDN fails
-5. Prefer smaller alternatives (Alpine over React, Petite-Vue over Vue)
-
-## Responsive Design Patterns
-
-### Container-Based Layout
 ```css
 .container {
   width: min(100% - 2rem, 1200px);
@@ -147,7 +165,8 @@ Generate self-contained, production-quality HTML/CSS/JS artifacts that run in an
 }
 ```
 
-### Mobile-First Media Queries
+#### Mobile-First Media Queries
+
 ```css
 /* Base: mobile */
 .layout { display: flex; flex-direction: column; }
@@ -159,18 +178,16 @@ Generate self-contained, production-quality HTML/CSS/JS artifacts that run in an
 }
 ```
 
-## Progressive Enhancement
+### Progressive Enhancement
 
-### Layer 1: HTML
-Content is accessible and meaningful without CSS or JS.
+| Layer | Purpose | Requirement |
+|---|---|---|
+| HTML | Content accessible and meaningful | Works without CSS or JS |
+| CSS | Visual presentation and layout | Works without JS |
+| JavaScript | Enhanced interactivity | Adds dynamic behavior |
 
-### Layer 2: CSS
-Visual presentation, layout, and basic interactions (`:hover`, `:focus`).
+#### Feature Detection
 
-### Layer 3: JavaScript
-Enhanced interactivity, dynamic content, real-time updates.
-
-### Feature Detection
 ```javascript
 // Check before using modern APIs
 if ('IntersectionObserver' in window) {
@@ -184,9 +201,10 @@ if (CSS.supports('backdrop-filter', 'blur(10px)')) {
 }
 ```
 
-## State Management (No Framework)
+### State Management (No Framework)
 
-### Simple State Pattern
+#### Simple State Pattern
+
 ```javascript
 function createStore(initialState) {
   let state = { ...initialState };
@@ -206,15 +224,14 @@ function createStore(initialState) {
 }
 ```
 
-### URL-Based State (for shareable artifacts)
+#### URL-Based State (for shareable artifacts)
+
 ```javascript
 function syncStateWithURL(store) {
   const params = new URLSearchParams(location.search);
-  // Read initial state from URL
   for (const [key, value] of params) {
     store.setState({ [key]: JSON.parse(value) });
   }
-  // Update URL when state changes
   store.subscribe(state => {
     const params = new URLSearchParams();
     Object.entries(state).forEach(([k, v]) => params.set(k, JSON.stringify(v)));
@@ -223,7 +240,7 @@ function syncStateWithURL(store) {
 }
 ```
 
-## Export Formats
+### Export Formats
 
 | Format | Use Case | Method |
 |---|---|---|
@@ -246,16 +263,31 @@ function syncStateWithURL(store) {
 - [ ] Print styles if applicable
 - [ ] Semantic HTML elements used appropriately
 
-## Anti-Patterns
+## Anti-Patterns / Common Mistakes
 
-- Using React/Vue/Angular in a single-file artifact (use Alpine.js or vanilla JS)
-- Loading heavy frameworks from CDN for simple interactions
-- Inline styles instead of CSS custom properties
-- No error handling on user input or API calls
-- Fixed pixel dimensions instead of responsive units
-- Missing `<meta viewport>` tag
-- Blocking script tags in `<head>` without `defer`
+| Anti-Pattern | Why It Is Wrong | What to Do Instead |
+|---|---|---|
+| React/Vue/Angular in single-file artifact | Massive overhead for simple interactions | Use Alpine.js or vanilla JS |
+| Heavy framework from CDN for simple UI | Slow load, wasted bandwidth | Match dependency weight to need |
+| Inline styles instead of CSS custom properties | Cannot theme, cannot dark-mode | Use CSS custom properties (tokens) |
+| No error handling on user input | Crashes on bad input | Validate and provide feedback |
+| Fixed pixel dimensions | Breaks on mobile, tablets | Use responsive units (%, rem, vw) |
+| Missing `<meta viewport>` | Mobile renders desktop-zoomed | Always include viewport meta tag |
+| Blocking `<script>` in `<head>` | Delays page rendering | Use `defer` attribute or put at end of body |
+| No IIFE wrapper for script | Global scope pollution | Wrap in `(function() { ... })()` |
+| Hardcoded colors without tokens | Cannot switch themes | Use CSS custom properties |
+
+## Integration Points
+
+| Skill | Integration |
+|---|---|
+| `ui-ux-pro-max` | Style selection and UX guidelines |
+| `ui-design-system` | Design tokens for consistent theming |
+| `canvas-design` | Canvas/SVG visualizations within artifacts |
+| `senior-frontend` | Complex component patterns |
+| `mobile-design` | Mobile-responsive artifact design |
+| `planning` | Artifact scope is defined during planning |
 
 ## Skill Type
 
-**FLEXIBLE** — Adapt the architecture, dependencies, and complexity to the artifact's requirements. Simple demos should remain as minimal as possible; complex tools may use lightweight frameworks.
+**FLEXIBLE** — Adapt the architecture, dependencies, and complexity to the artifact's requirements. Simple demos should remain as minimal as possible; complex tools may use lightweight frameworks and multiple CDN dependencies.

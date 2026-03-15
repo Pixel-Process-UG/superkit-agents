@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: When the user needs code quality review, refactoring guidance, SOLID principles application, or help identifying and fixing code smells.
+description: "Use when the user needs code quality review, refactoring guidance, SOLID principles application, or help identifying and fixing code smells. Triggers: code smell detection, refactoring planning, naming convention review, complexity reduction, DRY analysis, error handling improvement."
 ---
 
 # Clean Code
@@ -9,82 +9,169 @@ description: When the user needs code quality review, refactoring guidance, SOLI
 
 Apply clean code principles to produce readable, maintainable, and testable software. This skill covers SOLID principles, DRY application, code smell identification, refactoring patterns, naming conventions, error handling, and complexity management. Based on the works of Robert C. Martin, Martin Fowler, and Kent Beck.
 
-## Process
+**Announce at start:** "I'm using the clean-code skill to improve code quality."
 
-1. Read and understand the existing code in full context
-2. Identify code smells and anti-patterns
-3. Assess cyclomatic complexity and coupling
-4. Apply relevant refactoring patterns
-5. Verify behavior preservation (tests must still pass)
-6. Review naming, structure, and documentation
+---
+
+## Phase 1: Analyze Current Code
+
+**Goal:** Read and understand the code in full context before changing anything.
+
+### Actions
+
+1. Read the code in its full context (not just the snippet)
+2. Identify the code's responsibility and purpose
+3. Measure cyclomatic complexity
+4. Map coupling and dependencies
+5. Note any existing tests
+
+### STOP — Do NOT proceed to Phase 2 until:
+- [ ] Code is read in full context
+- [ ] Purpose and responsibility are understood
+- [ ] Complexity hotspots are identified
+- [ ] Existing test coverage is known
+
+---
+
+## Phase 2: Identify Code Smells
+
+**Goal:** Catalog all code smells using the reference tables below.
+
+### Bloaters
+
+| Smell | Detection | Refactoring |
+|-------|-----------|------------|
+| Long Method | > 30 lines | Extract Method |
+| Large Class | > 300 lines or > 5 responsibilities | Extract Class |
+| Long Parameter List | > 3 parameters | Introduce Parameter Object |
+| Data Clumps | Same params appear together | Extract Class |
+| Primitive Obsession | Primitives instead of small objects | Replace with Value Object |
+
+### Object-Orientation Abusers
+
+| Smell | Detection | Refactoring |
+|-------|-----------|------------|
+| Switch Statements | Switch on type | Replace with Polymorphism |
+| Parallel Inheritance | Every subclass requires parallel subclass | Merge hierarchies |
+| Refused Bequest | Subclass ignores inherited methods | Replace Inheritance with Delegation |
+
+### Change Preventers
+
+| Smell | Detection | Refactoring |
+|-------|-----------|------------|
+| Divergent Change | One class changed for multiple reasons | Extract Class (SRP) |
+| Shotgun Surgery | One change touches many classes | Move Method, Inline Class |
+
+### Dispensables
+
+| Smell | Detection | Refactoring |
+|-------|-----------|------------|
+| Dead Code | Unreachable or unused | Remove |
+| Speculative Generality | Unused abstractions "just in case" | Collapse Hierarchy, Remove |
+| Comments explaining bad code | Comments compensating for unclear code | Rename, Extract Method |
+
+### STOP — Do NOT proceed to Phase 3 until:
+- [ ] All code smells are cataloged
+- [ ] Each smell has a priority (high/medium/low)
+- [ ] Refactoring approach is identified for each
+
+---
+
+## Phase 3: Apply Refactoring
+
+**Goal:** Apply refactoring patterns one at a time, verifying tests after each.
+
+### Actions
+
+1. Apply ONE refactoring at a time
+2. Run tests after each change
+3. If any test fails, revert immediately
+4. Continue until code is clean
+5. Review naming, structure, and documentation
+
+### STOP — Refactoring complete when:
+- [ ] All high-priority smells are resolved
+- [ ] All tests pass after each change
+- [ ] No behavior was changed during refactoring
+- [ ] Code is readable to a new team member
+
+---
 
 ## SOLID Principles
 
 ### S — Single Responsibility Principle
+
 A class/module should have one, and only one, reason to change.
 
-**Smell**: A class that changes for multiple unrelated reasons.
-**Fix**: Extract responsibilities into separate classes.
+**Smell:** A class that changes for multiple unrelated reasons.
+**Fix:** Extract responsibilities into separate classes.
 
 ### O — Open/Closed Principle
-Software entities should be open for extension but closed for modification.
 
-**Smell**: Switch statements that grow with new types.
-**Fix**: Use polymorphism, strategy pattern, or plugin architecture.
+Open for extension, closed for modification.
+
+**Smell:** Switch statements that grow with new types.
+**Fix:** Polymorphism, strategy pattern, or plugin architecture.
 
 ### L — Liskov Substitution Principle
-Subtypes must be substitutable for their base types without altering correctness.
 
-**Smell**: Subclass overrides method to throw "not supported" or changes behavior.
-**Fix**: Restructure the hierarchy; prefer composition over inheritance.
+Subtypes must be substitutable for their base types.
+
+**Smell:** Subclass overrides method to throw "not supported."
+**Fix:** Restructure hierarchy; prefer composition over inheritance.
 
 ### I — Interface Segregation Principle
-No client should be forced to depend on methods it does not use.
 
-**Smell**: Interfaces with many methods where implementors leave some as no-ops.
-**Fix**: Split into smaller, focused interfaces.
+No client should depend on methods it does not use.
+
+**Smell:** Interfaces with many methods; implementors leave some as no-ops.
+**Fix:** Split into smaller, focused interfaces.
 
 ### D — Dependency Inversion Principle
+
 Depend on abstractions, not concretions.
 
-**Smell**: High-level modules importing low-level modules directly.
-**Fix**: Inject dependencies via interfaces/abstract classes.
+**Smell:** High-level modules importing low-level modules directly.
+**Fix:** Inject dependencies via interfaces/abstract classes.
+
+---
 
 ## Naming Conventions
 
 ### Rules
-- **Variables**: nouns describing what they hold (`userCount`, not `n`)
-- **Booleans**: prefixed with `is`, `has`, `can`, `should` (`isActive`, `hasPermission`)
-- **Functions**: verbs describing what they do (`calculateTotal`, `fetchUsers`)
-- **Constants**: UPPER_SNAKE_CASE (`MAX_RETRY_COUNT`)
-- **Classes**: PascalCase nouns (`UserRepository`, `PaymentService`)
-- **Interfaces**: describe capability (`Serializable`, `Cacheable`) or use `I` prefix if convention requires
+
+| Element | Convention | Example |
+|---------|-----------|---------|
+| Variables | Nouns describing what they hold | `userCount`, not `n` |
+| Booleans | Prefixed with is/has/can/should | `isActive`, `hasPermission` |
+| Functions | Verbs describing what they do | `calculateTotal`, `fetchUsers` |
+| Constants | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT` |
+| Classes | PascalCase nouns | `UserRepository`, `PaymentService` |
+| Interfaces | Describe capability | `Serializable`, `Cacheable` |
 
 ### Name Length Guidelines
-- Loop counters: 1-2 chars (`i`, `j`) — only in tiny loops
-- Lambda params: 1-3 chars when context is clear (`users.filter(u => u.active)`)
-- Local variables: short but descriptive (`total`, `result`)
-- Function names: medium length, descriptive (`calculateMonthlyRevenue`)
-- Class names: as long as needed (`AuthenticationTokenValidator`)
+
+| Scope | Length | Example |
+|-------|--------|---------|
+| Loop counters | 1-2 chars | `i`, `j` (tiny loops only) |
+| Lambda params | 1-3 chars when context clear | `users.filter(u => u.active)` |
+| Local variables | Short but descriptive | `total`, `result` |
+| Function names | Medium, descriptive | `calculateMonthlyRevenue` |
+| Class names | As long as needed | `AuthenticationTokenValidator` |
+
+---
 
 ## Function Guidelines
 
-### Size
+### Size and Structure
+
 - Functions should do one thing
 - Ideal: 5-15 lines (excluding boilerplate)
 - Maximum: 30 lines (beyond this, extract)
-- Maximum parameters: 3 (beyond this, use an options object)
-
-### Structure
-```
-function doSomething(input) {
-  // 1. Validate input (guard clauses)
-  // 2. Core logic (one level of abstraction)
-  // 3. Return result
-}
-```
+- Maximum parameters: 3 (beyond this, use options object)
 
 ### Guard Clauses (Early Return)
+
 ```typescript
 // Bad: nested conditions
 function getDiscount(user) {
@@ -107,46 +194,21 @@ function getDiscount(user) {
 }
 ```
 
-## Code Smells Catalog
-
-### Bloaters
-| Smell | Detection | Refactoring |
-|---|---|---|
-| Long Method | > 30 lines | Extract Method |
-| Large Class | > 300 lines or > 5 responsibilities | Extract Class |
-| Long Parameter List | > 3 parameters | Introduce Parameter Object |
-| Data Clumps | Same group of params appear together | Extract Class |
-| Primitive Obsession | Using primitives instead of small objects | Replace with Value Object |
-
-### Object-Orientation Abusers
-| Smell | Detection | Refactoring |
-|---|---|---|
-| Switch Statements | Switch on type | Replace with Polymorphism |
-| Parallel Inheritance | Every subclass requires parallel subclass | Merge hierarchies |
-| Refused Bequest | Subclass doesn't use inherited methods | Replace Inheritance with Delegation |
-
-### Change Preventers
-| Smell | Detection | Refactoring |
-|---|---|---|
-| Divergent Change | One class changed for multiple reasons | Extract Class (SRP) |
-| Shotgun Surgery | One change requires touching many classes | Move Method, Inline Class |
-
-### Dispensables
-| Smell | Detection | Refactoring |
-|---|---|---|
-| Dead Code | Unreachable or unused code | Remove |
-| Speculative Generality | Unused abstractions "just in case" | Collapse Hierarchy, Remove |
-| Comments explaining bad code | Comments compensating for unclear code | Rename, Extract Method |
+---
 
 ## Error Handling Patterns
 
-### Prefer
-- Specific error types over generic errors
-- Error results over thrown exceptions (in functional style)
-- Fail fast at system boundaries
-- Meaningful error messages with context
+### Decision Table
 
-### Pattern: Result Type
+| Approach | Use When | Example |
+|----------|----------|---------|
+| Result type | Functional style, expected failures | `Result<T, E>` return type |
+| Specific exceptions | OOP style, exceptional cases | `throw new ValidationError(...)` |
+| Error codes | C-style APIs, cross-language | Return code + message |
+| Option/Maybe | Value may or may not exist | `Option<User>` |
+
+### Result Type Pattern
+
 ```typescript
 type Result<T, E = Error> =
   | { success: true; data: T }
@@ -165,74 +227,105 @@ function parseConfig(raw: string): Result<Config, ParseError> {
 }
 ```
 
-### Never Do
-- Catch and swallow errors silently
-- Use exceptions for control flow
-- Return null to indicate an error
-- Log and rethrow without adding context
+### Error Handling Never List
 
-## Comment Philosophy
+- Never catch and swallow errors silently
+- Never use exceptions for control flow
+- Never return null to indicate an error
+- Never log and rethrow without adding context
 
-### Good Comments
-- **Why**: explains the reasoning behind a non-obvious decision
-- **Legal**: copyright, license headers
-- **TODO**: with ticket reference (`// TODO(PROJ-123): ...`)
-- **Warning**: explains consequences (`// WARNING: This is not thread-safe`)
-- **API docs**: public interface documentation (JSDoc/TSDoc)
-
-### Bad Comments (Remove and Fix the Code Instead)
-- Restating what the code does (`// increment counter` before `counter++`)
-- Commented-out code (use version control)
-- Journal comments (use git log)
-- Closing brace comments (`} // end if`)
-- Mandated comments on obvious code
+---
 
 ## Complexity Metrics
 
-### Cyclomatic Complexity
-- 1-5: Simple, low risk
-- 6-10: Moderate, consider refactoring
-- 11-20: Complex, should refactor
-- 21+: Very high risk, must refactor
-
-### Cognitive Complexity (Sonar)
-Measures how hard code is to understand. Penalizes nesting more than branching.
+| Range | Risk Level | Action |
+|-------|-----------|--------|
+| 1-5 | Low | No action needed |
+| 6-10 | Moderate | Consider refactoring |
+| 11-20 | High | Should refactor |
+| 21+ | Critical | Must refactor |
 
 ### Reducing Complexity
+
 1. Extract complex conditions into named booleans
 2. Replace nested conditionals with guard clauses
 3. Use polymorphism instead of type checking
 4. Decompose into smaller functions
 5. Use lookup tables instead of switch/if chains
 
+---
+
+## DRY Application Decision Table
+
+| Situation | Apply DRY? | Rationale |
+|-----------|-----------|-----------|
+| Exact duplication of logic | Yes | Same logic should live in one place |
+| Three or more occurrences | Yes | Rule of Three confirms the pattern |
+| Two occurrences only | Wait | May be coincidental similarity |
+| Similar structure, different purpose | No | Different reasons to change |
+| Abstracting adds more complexity | No | Clarity over DRY |
+
+---
+
+## Comment Philosophy
+
+### Good Comments
+
+| Type | Example |
+|------|---------|
+| Why (reasoning) | `// Use binary search because list is pre-sorted and >10K items` |
+| Legal | Copyright, license headers |
+| TODO with ticket | `// TODO(PROJ-123): Add rate limiting` |
+| Warning | `// WARNING: This is not thread-safe` |
+| Public API docs | JSDoc/TSDoc for public interfaces |
+
+### Bad Comments (remove and fix code instead)
+
+| Type | Example |
+|------|---------|
+| Restating code | `// increment counter` before `counter++` |
+| Commented-out code | Use version control instead |
+| Journal comments | Use git log instead |
+| Closing brace comments | `} // end if` |
+
+---
+
+## Anti-Patterns / Common Mistakes
+
+| Anti-Pattern | Why It Is Wrong | Correct Approach |
+|-------------|----------------|-----------------|
+| Premature abstraction | DRYing code that differs in intent | Wait for Rule of Three |
+| God classes | Know everything, do everything | Split by responsibility (SRP) |
+| Feature envy | Method uses another class's data more than its own | Move method to the data owner |
+| Stringly typed data | Strings where enums/types belong | Define proper types |
+| Magic numbers | Unclear meaning, error-prone | Named constants |
+| Boolean trap | Function with boolean params that change behavior | Use named options or separate functions |
+| Over-engineering | Abstractions for problems that do not exist | YAGNI — You Ain't Gonna Need It |
+
+---
+
+## Integration Points
+
+| Skill | Relationship |
+|-------|-------------|
+| `code-review` | Review identifies code smells for clean-code to resolve |
+| `test-driven-development` | TDD ensures behavior preservation during refactoring |
+| `senior-frontend` | Frontend components follow clean code principles |
+| `senior-backend` | Backend services follow SOLID and clean architecture |
+| `performance-optimization` | Clean code enables easier performance optimization |
+| `systematic-debugging` | Clean code is easier to debug |
+
+---
+
 ## Immutability Preferences
 
 - Default to `const` (JavaScript/TypeScript)
-- Use readonly properties and ReadonlyArray
+- Use `readonly` properties and `ReadonlyArray`
 - Prefer spread/destructuring over mutation
 - Use immutable update patterns for state
 - Only mutate when performance profiling demands it
 
-## DRY Application
-
-### When to DRY
-- Exact duplication of logic (not just similar structure)
-- Three or more occurrences (Rule of Three)
-- When the duplicated code would change together
-
-### When NOT to DRY
-- Superficially similar code that serves different purposes
-- Two occurrences only (wait for a third)
-- When abstracting adds more complexity than the duplication
-
-## Anti-Patterns
-
-- Premature abstraction (DRYing code that shouldn't be)
-- God classes that know everything
-- Feature envy (method uses another class's data more than its own)
-- Stringly typed data (using strings where enums/types belong)
-- Magic numbers without named constants
-- Boolean trap (function with boolean params that change behavior)
+---
 
 ## Skill Type
 

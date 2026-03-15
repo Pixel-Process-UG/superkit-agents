@@ -1,6 +1,12 @@
 ---
 name: php-specialist
-description: Use when writing modern PHP 8.x code — enums, fibers, readonly properties, PSR standards, Composer, static analysis, SOLID patterns
+description: >
+  Use when writing modern PHP 8.x code — enums, fibers, readonly properties, PSR standards,
+  Composer, static analysis, SOLID patterns.
+  Trigger conditions: PHP code authoring, enum design, readonly DTO creation, PSR-4
+  autoloading setup, PHPStan or Psalm configuration, PHP CS Fixer or Pint setup,
+  Composer dependency management, SOLID principle application, type safety improvements,
+  custom exception hierarchies, interface-driven design.
 ---
 
 # PHP Specialist
@@ -9,35 +15,64 @@ description: Use when writing modern PHP 8.x code — enums, fibers, readonly pr
 
 Write modern, type-safe, and maintainable PHP 8.x code adhering to PSR standards and SOLID principles. This skill covers the full modern PHP toolchain: language features introduced in PHP 8.0 through 8.4, PSR interoperability standards, Composer dependency management, static analysis with PHPStan and Psalm, coding style enforcement with PHP CS Fixer and Pint, and architectural patterns that leverage the type system for correctness at compile time rather than runtime.
 
-## Process
+Apply this skill whenever PHP code is being written, reviewed, or refactored in any framework or standalone context.
+
+## Multi-Phase Process
 
 ### Phase 1: Environment Assessment
-1. Identify PHP version from `composer.json` → `require.php`
+
+1. Identify PHP version from `composer.json` -> `require.php`
 2. Review `composer.json` for autoloading strategy (PSR-4 namespaces)
 3. Check for static analysis configuration (`phpstan.neon`, `psalm.xml`)
 4. Identify coding standard tool (`pint.json`, `.php-cs-fixer.php`)
 5. Catalog existing patterns: enums, DTOs, value objects, interfaces
 
+> **STOP — Do NOT write code without knowing the PHP version and autoloading strategy.**
+
 ### Phase 2: Design
+
 1. Define interfaces and contracts before implementations
 2. Design value objects and DTOs with readonly properties
 3. Map domain concepts to backed enums where applicable
 4. Plan exception hierarchy for the domain
 5. Identify seams for dependency injection
 
+> **STOP — Do NOT implement without interfaces defined for key boundaries.**
+
 ### Phase 3: Implementation
+
 1. Write interfaces first — contracts before concrete classes
 2. Implement with constructor promotion, readonly properties, union/intersection types
 3. Use match expressions over switch; named arguments for clarity
 4. Leverage first-class callable syntax for functional composition
 5. Apply SOLID principles at every class boundary
 
+> **STOP — Do NOT skip strict_types declaration in any PHP file.**
+
 ### Phase 4: Quality Assurance
+
 1. Run PHPStan at maximum achievable level (target level 9)
 2. Enforce coding style with PHP CS Fixer or Laravel Pint
 3. Verify type coverage — no `mixed` without justification
 4. Review for SOLID violations and code smells
 5. Confirm Composer autoload is optimized (`--classmap-authoritative`)
+
+## PHP Version Feature Decision Table
+
+| Feature | Minimum Version | Use When |
+|---|---|---|
+| Constructor promotion | 8.0 | Any class with constructor parameters |
+| Named arguments | 8.0 | Functions with 3+ params or boolean flags |
+| Match expressions | 8.0 | Any switch statement (strict, returns value) |
+| Union types | 8.0 | Parameter accepts multiple types |
+| Backed enums | 8.1 | Any set of named constants with values |
+| Readonly properties | 8.1 | Immutable DTOs, value objects |
+| Fibers | 8.1 | Async frameworks (rarely used directly) |
+| First-class callables | 8.1 | Functional composition, array_map/filter |
+| Readonly classes | 8.2 | All-readonly DTOs (shorthand) |
+| DNF types | 8.2 | Complex union + intersection combinations |
+| Override attribute | 8.3 | Overriding parent methods (safety check) |
+| Property hooks | 8.4 | Computed properties without separate methods |
 
 ## Modern PHP 8.x Features
 
@@ -495,30 +530,41 @@ final class TypedCollection implements \IteratorAggregate, \Countable
 }
 ```
 
-## Anti-Patterns
+## Anti-Patterns / Common Mistakes
 
-- **Using `mixed` as an escape hatch** — Every `mixed` type is a hole in the safety net; narrow with union types or generics
-- **Stringly-typed code** — Replace status strings, type indicators, and config keys with backed enums
-- **God classes** — If a class has more than one reason to change, split it; use Action classes for single operations
-- **Suppressing static analysis** — `@phpstan-ignore-line` should be rare and always accompanied by a comment explaining why
-- **Not declaring strict types** — Every PHP file should begin with `declare(strict_types=1);`
-- **Array-shaped data** — Replace associative arrays with readonly DTOs or value objects for domain data
-- **Service locator pattern** — Never call `app()` or `resolve()` inside business logic; inject dependencies through the constructor
-- **Catching `\Exception` broadly** — Catch specific exception types; re-throw or wrap unknown exceptions
-- **Mutable value objects** — Value objects must be immutable; use `readonly` classes or return new instances
-- **Ignoring Composer audit** — Run `composer audit` in CI; treat vulnerabilities as build failures
-- **Deep inheritance hierarchies** — Prefer composition and interfaces over more than two levels of inheritance
-- **Not using `final`** — Default to `final` on classes unless explicitly designed for extension
+| Anti-Pattern | Why It Fails | What To Do Instead |
+|---|---|---|
+| Using `mixed` as escape hatch | Holes in type safety net | Narrow with union types or generics |
+| Stringly-typed code | Runtime errors from typos | Use backed enums for named constants |
+| God classes (many responsibilities) | Untestable, high coupling | Split into Action classes |
+| Suppressing static analysis | Hides real bugs | Fix the issue, add `@phpstan-ignore` only with explanation |
+| Missing `declare(strict_types=1)` | Silent type coercion bugs | Add to every PHP file |
+| Array-shaped domain data | No IDE support, no type safety | Use readonly DTOs or value objects |
+| Service locator (`app()` in logic) | Hidden dependencies, untestable | Constructor injection |
+| Catching `\Exception` broadly | Swallows unexpected errors | Catch specific exception types |
+| Mutable value objects | Shared state bugs | Use `readonly` classes, return new instances |
+| Ignoring `composer audit` | Known vulnerabilities in production | Run in CI, treat as build failure |
+| Deep inheritance (3+ levels) | Fragile base class problem | Prefer composition and interfaces |
+| Classes not marked `final` | Unintended extension | Default to `final`, open only when designed for it |
+
+## Anti-Rationalization Guards
+
+- Do NOT skip `declare(strict_types=1)` because "it's just a small script" -- add it everywhere.
+- Do NOT use `mixed` without a comment justifying why a narrower type is impossible.
+- Do NOT suppress PHPStan errors without a written explanation of why the code is correct.
+- Do NOT use the service locator pattern (`app()`) in business logic, even in Laravel.
+- Do NOT skip interfaces for key boundaries because "there's only one implementation" -- there will be two.
 
 ## Integration Points
 
-| Skill | Integration |
+| Skill | How It Connects |
 |---|---|
 | `laravel-specialist` | PHP 8.x features power Eloquent casts, enums, readonly DTOs, and typed collections |
 | `senior-backend` | SOLID architecture, interface-driven design, error handling patterns |
 | `test-driven-development` | PHPUnit/Pest testing with strong type assertions |
 | `clean-code` | SOLID, DRY, code smell detection at the PHP level |
 | `security-review` | Input validation, type coercion risks, dependency vulnerabilities |
+| `laravel-boost` | AI-generated PHP code quality via guidelines and MCP tools |
 
 ## Skill Type
 
