@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import { resolvePlugin, listPlugins } from '../src/plugins';
-import { loadRegistry, saveRegistry, validateManifest, getRegistryDir } from '../src/plugin-registry';
-import type { PluginManifest, PluginRegistry } from '../src/plugin-registry';
+import { loadRegistry, validateManifest } from '../src/plugin-registry';
+import type { PluginManifest } from '../src/plugin-registry';
 
 describe('Plugin Registry', () => {
   it('loadRegistry returns empty registry when file does not exist', async () => {

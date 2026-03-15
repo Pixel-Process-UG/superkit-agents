@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { REQUIREMENTS, detectPlatform } from '../src/requirements';
-import type { Requirement, Platform } from '../src/requirements';
+import type { Platform } from '../src/requirements';
 
 describe('Requirements', () => {
   it('defines at least 3 requirements', () => {
