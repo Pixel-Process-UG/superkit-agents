@@ -1,214 +1,361 @@
 ---
 name: mcp-builder
-description: Use when building MCP (Model Context Protocol) servers including tool definitions, resources, prompts, transport configuration, and security hardening.
+description: When the user needs to build MCP (Model Context Protocol) servers — tool definitions, resource management, prompt templates, transport layers, and client integration.
 ---
 
 # MCP Builder
 
 ## Overview
-Guides the development of MCP (Model Context Protocol) servers that expose tools, resources, and prompts to AI assistants. Covers the full lifecycle from tool definition through transport configuration, error handling, testing, and security hardening.
+
+Build production-quality MCP (Model Context Protocol) servers that expose tools, resources, and prompts to AI clients. This skill covers the full development lifecycle: tool definition, resource management, prompt templates, transport configuration (stdio, SSE), error handling, security hardening, testing, and client integration.
 
 ## Process
 
-### 1. Server Architecture Design
-- [ ] Identify capabilities to expose:
-  - **Tools**: Actions the AI can invoke (create, update, delete, query)
-  - **Resources**: Data the AI can read (files, database records, API responses)
-  - **Prompts**: Reusable prompt templates the AI can use
-- [ ] Choose transport mechanism:
-  - **stdio**: For local CLI tools (default, simplest)
-  - **SSE (Server-Sent Events)**: For remote/web-based servers
-  - **Streamable HTTP**: For modern HTTP-based transport
-- [ ] Define the dependency and authentication requirements
-- [ ] Plan the directory structure:
-  ```
-  mcp-server/
-    src/
-      index.ts          # Server entry point
-      tools/            # Tool definitions and handlers
-      resources/        # Resource definitions and handlers
-      prompts/          # Prompt templates
-      utils/            # Shared utilities
-      types.ts          # TypeScript type definitions
-    tests/
-      tools/
-      resources/
-    package.json
-    tsconfig.json
-  ```
+### Phase 1: Design
+1. Identify capabilities to expose (tools, resources, prompts)
+2. Define tool schemas with Zod/JSON Schema
+3. Plan resource URI patterns
+4. Design error handling strategy
+5. Choose transport layer (stdio for CLI, SSE for web)
 
-### 2. Tool Definitions
-- [ ] Define each tool with precise schema:
-  ```typescript
-  server.tool(
-    "create-issue",
-    "Create a new issue in the project tracker",
-    {
-      title: z.string().describe("Issue title, concise and descriptive"),
-      body: z.string().describe("Detailed description of the issue"),
-      labels: z.array(z.string()).optional().describe("Labels to apply"),
-      priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
-      assignee: z.string().optional().describe("Username to assign"),
-    },
-    async ({ title, body, labels, priority, assignee }) => {
-      const issue = await issueTracker.create({ title, body, labels, priority, assignee });
-      return {
-        content: [{ type: "text", text: `Created issue #${issue.id}: ${issue.url}` }],
-      };
-    }
-  );
-  ```
-- [ ] Every parameter must have a `.describe()` annotation
-- [ ] Use Zod schemas for input validation
-- [ ] Return structured content (text, images, or embedded resources)
-- [ ] Handle errors gracefully with `isError: true` responses
+### Phase 2: Implementation
+1. Set up MCP server project structure
+2. Implement tool handlers with input validation
+3. Implement resource providers
+4. Add prompt templates
+5. Configure transport and authentication
 
-### 3. Resource Definitions
-- [ ] Define static and dynamic resources:
-  ```typescript
-  // Static resource
-  server.resource(
-    "project-config",
-    "config://project",
-    "Project configuration and settings",
-    async () => ({
-      contents: [{
-        uri: "config://project",
-        mimeType: "application/json",
-        text: JSON.stringify(await loadProjectConfig()),
+### Phase 3: Hardening
+1. Add comprehensive error handling
+2. Implement rate limiting and timeouts
+3. Security review (input sanitization, permission checks)
+4. Write integration tests
+5. Document tools and resources for clients
+
+## Tool Definition Patterns
+
+### Basic Tool Definition
+```typescript
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+
+const server = new McpServer({
+  name: 'my-mcp-server',
+  version: '1.0.0',
+});
+
+server.tool(
+  'search-documents',
+  'Search documents by query. Returns matching documents with relevance scores.',
+  {
+    query: z.string().describe('Search query string'),
+    limit: z.number().min(1).max(100).default(10).describe('Maximum results to return'),
+    filter: z.object({
+      type: z.enum(['article', 'page', 'note']).optional(),
+      dateAfter: z.string().datetime().optional(),
+    }).optional().describe('Optional filters'),
+  },
+  async ({ query, limit, filter }) => {
+    const results = await searchEngine.search(query, { limit, ...filter });
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify(results, null, 2),
       }],
-    })
-  );
+    };
+  }
+);
+```
 
-  // Dynamic resource with template
-  server.resource(
-    "issue-detail",
-    new ResourceTemplate("issues://{issueId}", "Issue details by ID"),
-    async (uri, { issueId }) => ({
-      contents: [{
-        uri: uri.href,
-        mimeType: "application/json",
-        text: JSON.stringify(await getIssue(issueId)),
-      }],
-    })
-  );
-  ```
-- [ ] Use appropriate MIME types
-- [ ] Implement resource list for discovery
-- [ ] Support subscription for resources that change
+### Tool Design Principles
+- **Clear naming**: verb-noun format (`search-documents`, `create-issue`, `get-status`)
+- **Descriptive descriptions**: explain what the tool does, when to use it, and what it returns
+- **Validated inputs**: use Zod schemas with `.describe()` on every field
+- **Structured outputs**: return well-formatted text or structured data
+- **Idempotent when possible**: same input produces same result
+- **Error messages**: actionable, specific error responses
 
-### 4. Prompt Definitions
-- [ ] Define reusable prompt templates:
-  ```typescript
-  server.prompt(
-    "code-review",
-    "Generate a structured code review",
-    {
-      language: z.string().describe("Programming language"),
-      code: z.string().describe("Code to review"),
-      focus: z.enum(["security", "performance", "readability", "all"]).default("all"),
-    },
-    ({ language, code, focus }) => ({
+### Tool Response Patterns
+```typescript
+// Text response
+return { content: [{ type: 'text', text: 'Operation completed successfully' }] };
+
+// Structured data response
+return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+
+// Multi-part response
+return {
+  content: [
+    { type: 'text', text: `Found ${results.length} results:` },
+    { type: 'text', text: results.map(r => `- ${r.title}: ${r.summary}`).join('\n') },
+  ],
+};
+
+// Image response
+return { content: [{ type: 'image', data: base64Data, mimeType: 'image/png' }] };
+
+// Error response
+return {
+  content: [{ type: 'text', text: `Error: ${error.message}` }],
+  isError: true,
+};
+```
+
+## Resource Management
+
+### Resource Definition
+```typescript
+// Static resource
+server.resource(
+  'config',
+  'config://app/settings',
+  { mimeType: 'application/json' },
+  async () => ({
+    contents: [{
+      uri: 'config://app/settings',
+      mimeType: 'application/json',
+      text: JSON.stringify(appConfig),
+    }],
+  })
+);
+
+// Dynamic resource with URI template
+server.resource(
+  'document',
+  new ResourceTemplate('docs://{category}/{id}', { list: undefined }),
+  { mimeType: 'text/markdown' },
+  async (uri, { category, id }) => ({
+    contents: [{
+      uri: uri.href,
+      mimeType: 'text/markdown',
+      text: await getDocument(category, id),
+    }],
+  })
+);
+```
+
+### Resource URI Conventions
+```
+file:///path/to/file          — Local files
+https://api.example.com/data  — Remote HTTP resources
+db://database/table/id        — Database records
+config://app/settings         — Configuration
+docs://category/slug          — Documentation
+```
+
+## Prompt Templates
+
+```typescript
+server.prompt(
+  'code-review',
+  'Generate a code review for the given file',
+  {
+    filePath: z.string().describe('Path to the file to review'),
+    severity: z.enum(['strict', 'normal', 'lenient']).default('normal'),
+  },
+  async ({ filePath, severity }) => {
+    const code = await readFile(filePath, 'utf-8');
+    return {
       messages: [{
-        role: "user",
+        role: 'user',
         content: {
-          type: "text",
-          text: `Review this ${language} code with focus on ${focus}:\n\n\`\`\`${language}\n${code}\n\`\`\``,
+          type: 'text',
+          text: `Review this code with ${severity} standards:\n\n\`\`\`\n${code}\n\`\`\`\n\nProvide feedback on: correctness, performance, security, readability.`,
         },
       }],
-    })
-  );
-  ```
+    };
+  }
+);
+```
 
-### 5. Error Handling
-- [ ] Categorize errors by recoverability:
-  ```typescript
-  // User-facing error (bad input, not found)
-  return {
-    content: [{ type: "text", text: `Issue #${id} not found` }],
-    isError: true,
-  };
+## Transport Layers
 
-  // Internal error (service down, unexpected)
+### Stdio Transport (CLI tools, local development)
+```typescript
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+### SSE Transport (Web applications, remote servers)
+```typescript
+import express from 'express';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+
+const app = express();
+
+app.get('/sse', async (req, res) => {
+  const transport = new SSEServerTransport('/messages', res);
+  await server.connect(transport);
+});
+
+app.post('/messages', async (req, res) => {
+  // Handle incoming messages
+});
+
+app.listen(3001);
+```
+
+### Transport Selection
+| Transport | Use Case | Pros | Cons |
+|---|---|---|---|
+| Stdio | CLI tools, local MCP clients | Simple, no network | Local only |
+| SSE | Web apps, remote clients | Network-accessible, real-time | Requires HTTP server |
+
+## Error Handling
+
+```typescript
+server.tool('risky-operation', 'Performs an operation that might fail', {
+  input: z.string(),
+}, async ({ input }) => {
   try {
-    const result = await riskyOperation();
-    return { content: [{ type: "text", text: result }] };
+    const result = await performOperation(input);
+    return { content: [{ type: 'text', text: JSON.stringify(result) }] };
   } catch (error) {
-    console.error("Operation failed:", error);
+    if (error instanceof ValidationError) {
+      return {
+        content: [{ type: 'text', text: `Invalid input: ${error.message}` }],
+        isError: true,
+      };
+    }
+    if (error instanceof NotFoundError) {
+      return {
+        content: [{ type: 'text', text: `Resource not found: ${error.message}` }],
+        isError: true,
+      };
+    }
+    // Unexpected errors — log and return generic message
+    console.error('Unexpected error:', error);
     return {
-      content: [{ type: "text", text: `Operation failed: ${error.message}. Please try again.` }],
+      content: [{ type: 'text', text: 'An unexpected error occurred. Please try again.' }],
       isError: true,
     };
   }
-  ```
-- [ ] Never expose stack traces or internal details to the client
-- [ ] Log errors server-side with full context
-- [ ] Return actionable error messages
+});
+```
 
-### 6. Transport Configuration
-- [ ] **stdio transport** (local):
-  ```typescript
-  import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  ```
-- [ ] **SSE transport** (remote):
-  ```typescript
-  import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
-  app.get("/sse", async (req, res) => {
-    const transport = new SSEServerTransport("/message", res);
-    await server.connect(transport);
-  });
-  app.post("/message", async (req, res) => {
-    await transport.handlePostMessage(req, res);
-  });
-  ```
-- [ ] Configure appropriate timeouts
-- [ ] Handle connection lifecycle (connect, disconnect, reconnect)
+### Error Handling Rules
+- Never expose stack traces to clients
+- Return `isError: true` for all error responses
+- Log unexpected errors server-side
+- Provide actionable error messages
+- Handle timeouts for external service calls
+- Validate all inputs before processing
 
-### 7. Testing Strategy
-- [ ] Unit test each tool handler independently:
-  ```typescript
-  describe("create-issue tool", () => {
-    it("creates issue with valid input", async () => {
-      const result = await handler({ title: "Bug", body: "Description", priority: "high" });
-      expect(result.content[0].text).toContain("Created issue #");
-      expect(result.isError).toBeUndefined();
+## Security Considerations
+
+### Input Validation
+- Validate all tool inputs with Zod schemas
+- Sanitize file paths (prevent path traversal: `../../../etc/passwd`)
+- Limit string lengths to prevent abuse
+- Validate URLs before fetching
+- Sanitize SQL/command injection vectors
+
+### Permission Model
+- Principle of least privilege for file system access
+- Whitelist allowed directories and operations
+- Rate limit tool invocations
+- Log all tool calls for auditing
+- Separate read-only and write tools
+
+### Secrets
+- Never expose API keys in tool responses
+- Use environment variables for credentials
+- Rotate secrets regularly
+- Mask sensitive data in logs
+
+## Testing MCP Servers
+
+```typescript
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+
+describe('MCP Server', () => {
+  let server: McpServer;
+  let client: Client;
+
+  beforeEach(async () => {
+    server = createServer();
+    client = new Client({ name: 'test-client', version: '1.0.0' });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await Promise.all([
+      server.connect(serverTransport),
+      client.connect(clientTransport),
+    ]);
+  });
+
+  test('search-documents returns results', async () => {
+    const result = await client.callTool({
+      name: 'search-documents',
+      arguments: { query: 'test', limit: 5 },
     });
-
-    it("returns error for missing required fields", async () => {
-      await expect(handler({})).rejects.toThrow();
-    });
+    expect(result.content[0].type).toBe('text');
+    const data = JSON.parse(result.content[0].text);
+    expect(data.length).toBeLessThanOrEqual(5);
   });
-  ```
-- [ ] Integration test with MCP client:
-  ```typescript
-  const client = new Client({ name: "test", version: "1.0" });
-  const transport = new StdioClientTransport({ command: "node", args: ["dist/index.js"] });
-  await client.connect(transport);
-  const result = await client.callTool("create-issue", { title: "Test", body: "Body" });
-  ```
-- [ ] Test error paths and edge cases
-- [ ] Test resource listing and reading
-- [ ] Validate schema compliance
 
-### 8. Security Hardening
-- [ ] Validate all inputs with Zod (never trust client data)
-- [ ] Sanitize outputs (no SQL injection, XSS, path traversal)
-- [ ] Implement rate limiting for expensive operations
-- [ ] Use environment variables for secrets (never hardcode)
-- [ ] Limit file system access to allowed directories
-- [ ] Log all tool invocations for audit trail
-- [ ] Implement authentication for remote transports
-- [ ] Restrict tool capabilities to minimum required permissions
+  test('handles invalid input gracefully', async () => {
+    const result = await client.callTool({
+      name: 'search-documents',
+      arguments: { query: '', limit: -1 },
+    });
+    expect(result.isError).toBe(true);
+  });
+});
+```
 
-## Key Principles
-1. **Descriptive schemas** - Every tool, parameter, and resource must have clear descriptions. The AI uses these to decide when and how to invoke tools.
-2. **Fail gracefully** - Return `isError: true` with helpful messages rather than throwing unhandled exceptions.
-3. **Principle of least privilege** - Tools should have the minimum permissions needed. Do not expose broad capabilities.
-4. **Idempotent where possible** - Tools that can be safely retried are more robust in AI agent loops.
-5. **Test with real clients** - Unit tests are insufficient. Test the full MCP protocol flow.
-6. **Version your server** - Use semantic versioning. Breaking changes to tool schemas require major version bumps.
+## Client Integration
+
+### Claude Desktop Configuration
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "command": "node",
+      "args": ["/path/to/server/dist/index.js"],
+      "env": {
+        "API_KEY": "your-key-here"
+      }
+    }
+  }
+}
+```
+
+## Project Structure
+
+```
+src/
+  index.ts          # Server entry point
+  tools/
+    search.ts       # Tool implementations
+    create.ts
+  resources/
+    documents.ts    # Resource providers
+    config.ts
+  prompts/
+    review.ts       # Prompt templates
+  lib/
+    database.ts     # Shared utilities
+    validation.ts
+tests/
+  tools.test.ts
+  resources.test.ts
+package.json
+tsconfig.json
+```
+
+## Anti-Patterns
+
+- Tools that do too many things (split into focused tools)
+- Missing input validation (always use Zod schemas)
+- Returning raw error stack traces to clients
+- No timeout on external calls
+- Hardcoded secrets in source code
+- Tools without descriptions (clients cannot discover their purpose)
+- Blocking the event loop with synchronous operations
 
 ## Skill Type
-Rigid
+
+**RIGID** — All tools must have Zod-validated inputs and descriptive documentation. Error handling with `isError` flag is mandatory. Security review is required before deployment. Testing with in-memory transport is required.
