@@ -5,23 +5,25 @@
   "description": "Complete AI-optimized development environment for Claude Code with skills, hooks, agents, memory, and structured workflows",
   "type": "module",
   "bin": {
-    "claude-toolkit": "./bin/cli.js"
+    "claude-toolkit": "./dist/cli.js"
   },
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=18.0.0"
   },
   "files": [
-    "bin/",
-    "src/",
+    "dist/",
     "templates/",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
+    "build": "tsup src/cli.ts src/index.ts --format esm --dts --clean",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src/ tests/ bin/"
+    "lint": "eslint src/ tests/",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "claude",
@@ -33,7 +35,11 @@
     "hooks",
     "planning",
     "code-review",
-    "prd"
+    "prd",
+    "ralph",
+    "autonomous-loop",
+    "ui-ux",
+    "design-system"
   ],
   "author": "fwartner",
   "license": "MIT",
@@ -45,8 +51,12 @@
     "ora": "^8.1.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.0",
+    "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^3.0.0",
     "eslint": "^9.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   }
 }
