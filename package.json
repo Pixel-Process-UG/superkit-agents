@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "eslint src/ tests/ bin/"
   },
   "keywords": [
     "claude",
@@ -43,6 +44,8 @@
     "ora": "^8.1.0"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^3.0.0",
+    "eslint": "^9.0.0",
     "vitest": "^3.0.0"
   }
 }

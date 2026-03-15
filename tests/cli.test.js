@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { SKILLS, AGENTS, COMMANDS, MEMORY_FILES, SKILL_CATEGORIES } from '../src/config.js';
 
 describe('Config', () => {
-  it('has 25 skills defined', () => {
-    expect(Object.keys(SKILLS)).toHaveLength(25);
+  it('has 32 skills defined', () => {
+    expect(Object.keys(SKILLS)).toHaveLength(32);
   });
 
   it('has all expected skills', () => {
@@ -15,27 +15,36 @@ describe('Config', () => {
       'executing-plans', 'subagent-driven-development', 'dispatching-parallel-agents',
       'using-git-worktrees', 'finishing-a-development-branch', 'writing-skills',
       'frontend-ui-design', 'database-schema-design', 'security-review',
-      'performance-optimization',
+      'performance-optimization', 'autonomous-loop', 'circuit-breaker',
+      'ralph-status', 'spec-writing', 'reverse-engineering-specs',
+      'acceptance-testing', 'llm-as-judge',
     ];
     expect(Object.keys(SKILLS)).toEqual(expect.arrayContaining(expected));
-    expect(expected).toHaveLength(25);
+    expect(expected).toHaveLength(32);
   });
 
-  it('has 6 agents defined', () => {
-    expect(Object.keys(AGENTS)).toHaveLength(6);
+  it('has 9 agents defined', () => {
+    expect(Object.keys(AGENTS)).toHaveLength(9);
   });
 
   it('has all expected agents', () => {
-    const expected = ['planner', 'code-reviewer', 'prd-writer', 'doc-generator', 'spec-reviewer', 'quality-reviewer'];
+    const expected = [
+      'planner', 'code-reviewer', 'prd-writer', 'doc-generator',
+      'spec-reviewer', 'quality-reviewer', 'loop-orchestrator',
+      'spec-writer', 'acceptance-judge',
+    ];
     expect(Object.keys(AGENTS)).toEqual(expect.arrayContaining(expected));
   });
 
-  it('has 11 commands defined', () => {
-    expect(Object.keys(COMMANDS)).toHaveLength(11);
+  it('has 14 commands defined', () => {
+    expect(Object.keys(COMMANDS)).toHaveLength(14);
   });
 
   it('has all expected commands', () => {
-    const expected = ['plan', 'review', 'prd', 'learn', 'docs', 'tdd', 'debug', 'verify', 'execute', 'worktree', 'brainstorm'];
+    const expected = [
+      'plan', 'review', 'prd', 'learn', 'docs', 'tdd', 'debug',
+      'verify', 'execute', 'worktree', 'brainstorm', 'ralph', 'specs', 'loop',
+    ];
     expect(Object.keys(COMMANDS)).toEqual(expect.arrayContaining(expected));
   });
 

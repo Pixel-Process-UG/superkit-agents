@@ -124,6 +124,41 @@ export const SKILLS = {
     description: 'Profiling, caching, bundle optimization, Web Vitals',
     category: 'quality',
   },
+  'autonomous-loop': {
+    name: 'autonomous-loop',
+    description: 'Ralph-style iterative development with autonomous planning and building loops',
+    category: 'process',
+  },
+  'circuit-breaker': {
+    name: 'circuit-breaker',
+    description: 'Loop stagnation detection, rate limiting, and recovery patterns',
+    category: 'core',
+  },
+  'ralph-status': {
+    name: 'ralph-status',
+    description: 'Structured status reporting with exit signal protocol',
+    category: 'process',
+  },
+  'spec-writing': {
+    name: 'spec-writing',
+    description: 'JTBD-based specification writing with acceptance criteria',
+    category: 'documentation',
+  },
+  'reverse-engineering-specs': {
+    name: 'reverse-engineering-specs',
+    description: 'Generate implementation-free specs from existing codebases',
+    category: 'documentation',
+  },
+  'acceptance-testing': {
+    name: 'acceptance-testing',
+    description: 'Acceptance-driven backpressure with behavioral validation gates',
+    category: 'quality',
+  },
+  'llm-as-judge': {
+    name: 'llm-as-judge',
+    description: 'Non-deterministic validation for subjective quality criteria',
+    category: 'quality',
+  },
 };
 
 export const AGENTS = {
@@ -151,6 +186,18 @@ export const AGENTS = {
     name: 'quality-reviewer',
     description: 'Reviews code quality, patterns, performance, security',
   },
+  'loop-orchestrator': {
+    name: 'loop-orchestrator',
+    description: 'Manages autonomous development loop iterations',
+  },
+  'spec-writer': {
+    name: 'spec-writer',
+    description: 'Generates JTBD specifications with acceptance criteria',
+  },
+  'acceptance-judge': {
+    name: 'acceptance-judge',
+    description: 'Evaluates subjective quality via LLM-as-judge pattern',
+  },
 };
 
 export const COMMANDS = {
@@ -165,6 +212,9 @@ export const COMMANDS = {
   'execute': { name: 'execute', skill: 'executing-plans', description: 'Execute an approved plan' },
   'worktree': { name: 'worktree', skill: 'using-git-worktrees', description: 'Set up git worktree' },
   'brainstorm': { name: 'brainstorm', skill: 'brainstorming', description: 'Start brainstorming session' },
+  'ralph': { name: 'ralph', skill: 'autonomous-loop', description: 'Start Ralph autonomous development loop' },
+  'specs': { name: 'specs', skill: 'spec-writing', description: 'Write or audit specifications' },
+  'loop': { name: 'loop', skill: 'autonomous-loop', description: 'Start autonomous loop iteration' },
 };
 
 export const MEMORY_FILES = [

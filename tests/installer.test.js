@@ -17,7 +17,7 @@ describe('Installer', () => {
     await fs.remove(tmpDir);
   });
 
-  it('installs all 25 skills in plugin mode', async () => {
+  it('installs all 32 skills in plugin mode', async () => {
     await install({
       scope: 'project',
       format: 'plugin',
@@ -39,7 +39,7 @@ describe('Installer', () => {
     expect(await fs.pathExists(pluginPath)).toBe(true);
   });
 
-  it('installs all 25 skills in direct mode', async () => {
+  it('installs all 32 skills in direct mode', async () => {
     await install({
       scope: 'project',
       format: 'direct',
@@ -58,7 +58,7 @@ describe('Installer', () => {
     }
   });
 
-  it('installs all 6 agents', async () => {
+  it('installs all 9 agents', async () => {
     await install({
       scope: 'project',
       format: 'plugin',
@@ -77,7 +77,7 @@ describe('Installer', () => {
     }
   });
 
-  it('installs all 11 commands', async () => {
+  it('installs all 14 commands', async () => {
     await install({
       scope: 'project',
       format: 'plugin',
@@ -218,8 +218,8 @@ describe('Installer', () => {
     const content = await fs.readFile(path.join(tmpDir, 'CLAUDE.md'), 'utf8');
     expect(content).toContain('<!-- TOOLKIT START -->');
     expect(content).toContain('<!-- TOOLKIT END -->');
-    expect(content).toContain('Core Principles');
-    expect(content).toContain('25 Skills');
+    expect(content).toContain('HARD-GATES');
+    expect(content).toContain('32 skills');
   });
 
   it('merges CLAUDE.md with existing content', async () => {
@@ -241,7 +241,7 @@ describe('Installer', () => {
     expect(content).toContain('# My Project');
     expect(content).toContain('Existing content.');
     expect(content).toContain('<!-- TOOLKIT START -->');
-    expect(content).toContain('Core Principles');
+    expect(content).toContain('HARD-GATES');
   });
 
   it('installs skills with reference docs', async () => {
