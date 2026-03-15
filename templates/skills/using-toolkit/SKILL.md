@@ -21,17 +21,19 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 **Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means you should invoke the skill to check.
 
-## Available Skills (32 Total)
+## Available Skills (61 Total)
 
-### Core Skills (4)
+### Core Skills (6)
 | Skill | When to Use |
 |-------|------------|
 | `using-toolkit` | Session start — establishes skill usage |
 | `self-learning` | Starting work on unfamiliar projects, or when corrected |
 | `resilient-execution` | When an approach fails — ensures retry with alternatives |
 | `circuit-breaker` | Autonomous loops, repeated operations, stagnation detection |
+| `auto-improvement` | Self-improving system, tracks effectiveness, learns from errors |
+| `verification-before-completion` | Before claiming ANY task is complete |
 
-### Process & Workflow Skills (7)
+### Process & Workflow Skills (9)
 | Skill | When to Use |
 |-------|------------|
 | `planning` | Before ANY implementation — forces structured planning |
@@ -41,8 +43,10 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 | `subagent-driven-development` | Multi-task execution with two-stage review gates |
 | `dispatching-parallel-agents` | Running multiple independent tasks concurrently |
 | `autonomous-loop` | Ralph-style iterative autonomous development loops |
+| `ralph-status` | End of every autonomous loop iteration — structured progress reporting |
+| `task-decomposition` | Hierarchical task breakdown, dependency mapping, parallelization |
 
-### Quality Assurance Skills (8)
+### Quality Assurance Skills (17)
 | Skill | When to Use |
 |-------|------------|
 | `code-review` | After completing tasks, before committing |
@@ -53,6 +57,15 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 | `performance-optimization` | Optimizing speed, reducing load times |
 | `acceptance-testing` | Validating implementation meets spec acceptance criteria |
 | `llm-as-judge` | Evaluating subjective quality (tone, UX, readability, aesthetics) |
+| `senior-frontend` | React/Next.js/TypeScript specialist with >85% test coverage |
+| `senior-backend` | API design, microservices, event-driven architecture |
+| `senior-architect` | System design, scalability, trade-off analysis, ADRs |
+| `senior-fullstack` | End-to-end development across the full stack |
+| `clean-code` | SOLID, DRY, code smells, refactoring patterns |
+| `react-best-practices` | React hooks, context, suspense, server components |
+| `webapp-testing` | Playwright-based web testing, screenshots, browser logs |
+| `senior-prompt-engineer` | Prompt design, optimization, chain-of-thought |
+| `senior-data-scientist` | ML pipelines, statistical analysis, experiment design |
 
 ### Documentation Skills (5)
 | Skill | When to Use |
@@ -70,18 +83,50 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 | `frontend-ui-design` | Component architecture, responsive design, accessibility |
 | `database-schema-design` | Data modeling, migrations, indexing |
 
-### Operations Skills (3)
+### Operations Skills (7)
 | Skill | When to Use |
 |-------|------------|
 | `deployment` | Setting up CI/CD pipelines and deploy checklists |
 | `using-git-worktrees` | Creating isolated development environments |
 | `finishing-a-development-branch` | Completing work on a branch, preparing to merge |
+| `git-commit-helper` | Conventional commits, semantic versioning, changelogs |
+| `senior-devops` | CI/CD, Docker, Kubernetes, infrastructure-as-code |
+| `mcp-builder` | MCP server development, tools, resources, transport layers |
+| `agent-development` | Building AI agents, tool use, memory, planning |
 
-### Status & Reporting Skills (2)
+### Creative Skills (6)
 | Skill | When to Use |
 |-------|------------|
-| `ralph-status` | End of every autonomous loop iteration — structured progress reporting |
-| `verification-before-completion` | Before claiming ANY task is complete |
+| `ui-ux-pro-max` | Full UI/UX design intelligence with styles, palettes, fonts, UX guidelines |
+| `ui-design-system` | Design tokens, component libraries, Tailwind CSS, responsive patterns |
+| `canvas-design` | HTML Canvas, SVG, data visualization, generative art |
+| `mobile-design` | React Native, Flutter, SwiftUI, platform HIG compliance |
+| `ux-researcher-designer` | User research, personas, journey maps, usability testing |
+| `artifacts-builder` | Generate standalone artifacts, interactive demos, prototypes |
+
+### Business Skills (3)
+| Skill | When to Use |
+|-------|------------|
+| `seo-optimizer` | Technical SEO, meta tags, structured data, Core Web Vitals |
+| `content-research-writer` | Research methodology, long-form content, citations |
+| `content-creator` | Marketing copy, social media, brand voice |
+
+### Document Processing Skills (3)
+| Skill | When to Use |
+|-------|------------|
+| `docx-processing` | Word document generation, template filling |
+| `pdf-processing` | PDF generation, form filling, OCR, merge/split |
+| `xlsx-processing` | Excel manipulation, formulas, charts |
+
+### Productivity Skills (1)
+| Skill | When to Use |
+|-------|------------|
+| `file-organizer` | Project structure, file naming, directory architecture |
+
+### Communication Skills (1)
+| Skill | When to Use |
+|-------|------------|
+| `email-composer` | Professional email drafting, tone adjustment |
 
 ## Skill Priority
 
@@ -113,6 +158,15 @@ When multiple skills could apply, use this order:
 - **"Check for security issues"** → security-review
 - **"Make it faster"** → performance-optimization
 - **"Done with this branch"** → finishing-a-development-branch
+- **"Design a UI"** → ui-ux-pro-max → ui-design-system → frontend-ui-design
+- **"Build mobile app"** → mobile-design → planning → tdd
+- **"Optimize SEO"** → seo-optimizer
+- **"Write marketing copy"** → content-creator
+- **"Process documents"** → docx-processing / pdf-processing / xlsx-processing
+- **"Compose email"** → email-composer
+- **"Build an AI agent"** → agent-development → planning → tdd
+- **"Set up infrastructure"** → senior-devops → deployment
+- **"Decompose complex task"** → task-decomposition → dispatching-parallel-agents
 
 ## Red Flags
 
@@ -156,7 +210,7 @@ These thoughts mean STOP — you're rationalizing:
 
 ## Find Missing Skills
 
-When toolkit skills don't cover the need:
+When the 61 toolkit skills don't cover the need:
 ```bash
 npx skills find [query]                    # Search ecosystem
 npx skills add <owner/repo@skill> -g -y    # Install

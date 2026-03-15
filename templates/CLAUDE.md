@@ -6,7 +6,7 @@
 
 You are an AI development agent enhanced with the **@fwartner/claude-toolkit** (v1.0.0). This toolkit provides structured workflows, quality gates, and autonomous development capabilities through a comprehensive skill system.
 
-**Capabilities:** 32 skills | 9 agents | 14 commands | hooks | memory system
+**Capabilities:** 61 skills | 18 agents | 29 commands | hooks | memory system
 
 **Operating Philosophy:**
 - Structure enables autonomy — deterministic processes produce reliable outcomes
@@ -93,9 +93,9 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 
 ---
 
-## §4 SKILL CATALOG (32 Skills)
+## §4 SKILL CATALOG (61 Skills)
 
-### §4.1 Core (4 skills)
+### §4.1 Core (6 skills)
 
 | Skill | Trigger | Type | Command |
 |-------|---------|------|---------|
@@ -103,8 +103,10 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 | `self-learning` | Starting on unfamiliar project, receiving corrections | Rigid | `/learn` |
 | `resilient-execution` | Any approach fails — retry with alternatives | Rigid | — |
 | `circuit-breaker` | Autonomous loops, repeated operations, stagnation | Rigid | — |
+| `auto-improvement` | Self-improving system, tracks effectiveness, learns from errors | Rigid | — |
+| `verification-before-completion` | Before claiming ANY task is complete | Rigid | `/verify` |
 
-### §4.2 Process & Workflow (7 skills)
+### §4.2 Process & Workflow (9 skills)
 
 | Skill | Trigger | Type | Command |
 |-------|---------|------|---------|
@@ -115,8 +117,10 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 | `subagent-driven-development` | Multi-task execution with review gates | Rigid | — |
 | `dispatching-parallel-agents` | Running independent tasks concurrently | Rigid | — |
 | `autonomous-loop` | Ralph-style iterative autonomous development | Rigid | `/ralph`, `/loop` |
+| `ralph-status` | Structured status reporting with exit signal protocol | Rigid | — |
+| `task-decomposition` | Hierarchical breakdown, dependency mapping, parallelization | Rigid | `/decompose` |
 
-### §4.3 Quality Assurance (8 skills)
+### §4.3 Quality Assurance (17 skills)
 
 | Skill | Trigger | Type | Command |
 |-------|---------|------|---------|
@@ -128,6 +132,15 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 | `performance-optimization` | Optimizing speed, load times, bundle size | Flexible | — |
 | `acceptance-testing` | Validating implementation meets spec requirements | Rigid | — |
 | `llm-as-judge` | Evaluating subjective quality (tone, UX, readability) | Flexible | — |
+| `senior-frontend` | React/Next.js/TypeScript specialist | Flexible | `/frontend` |
+| `senior-backend` | API design, microservices, event-driven architecture | Flexible | `/backend` |
+| `senior-architect` | System design, scalability, trade-off analysis | Flexible | `/architect` |
+| `senior-fullstack` | End-to-end full-stack development | Flexible | `/fullstack` |
+| `clean-code` | SOLID, DRY, code smells, refactoring patterns | Flexible | `/clean` |
+| `react-best-practices` | React hooks, context, suspense, server components | Flexible | — |
+| `webapp-testing` | Playwright-based web testing, screenshots | Flexible | — |
+| `senior-prompt-engineer` | Prompt design, optimization, chain-of-thought | Flexible | — |
+| `senior-data-scientist` | ML pipelines, statistical analysis, experiment design | Flexible | — |
 
 ### §4.4 Documentation (5 skills)
 
@@ -147,27 +160,63 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 | `frontend-ui-design` | Component architecture, responsive design, a11y | Flexible | — |
 | `database-schema-design` | Data modeling, migrations, indexing | Flexible | — |
 
-### §4.6 Operations (3 skills)
+### §4.6 Operations (7 skills)
 
 | Skill | Trigger | Type | Command |
 |-------|---------|------|---------|
 | `deployment` | Setting up CI/CD pipelines and deploy checklists | Flexible | — |
 | `using-git-worktrees` | Creating isolated development environments | Rigid | `/worktree` |
 | `finishing-a-development-branch` | Completing branch work, preparing to merge | Rigid | — |
+| `git-commit-helper` | Conventional commits, semantic versioning | Flexible | `/commit` |
+| `senior-devops` | CI/CD, Docker, Kubernetes, infrastructure-as-code | Flexible | `/devops` |
+| `mcp-builder` | MCP server development, tools, resources | Flexible | `/mcp` |
+| `agent-development` | Building AI agents, tool use, memory, planning | Flexible | `/agent` |
 
-### §4.7 Status & Reporting (2 skills)
+### §4.7 Creative (6 skills)
 
 | Skill | Trigger | Type | Command |
 |-------|---------|------|---------|
-| `ralph-status` | End of every autonomous loop iteration | Rigid | — |
-| `verification-before-completion` | Before claiming ANY task is complete | Rigid | `/verify` |
+| `ui-ux-pro-max` | Full UI/UX design intelligence | Flexible | `/ui-ux` |
+| `ui-design-system` | Design tokens, component libraries | Flexible | `/design-system` |
+| `canvas-design` | HTML Canvas, SVG, data visualization | Flexible | — |
+| `mobile-design` | React Native, Flutter, SwiftUI | Flexible | `/mobile` |
+| `ux-researcher-designer` | User research, personas, journey maps | Flexible | — |
+| `artifacts-builder` | Standalone artifacts, demos, prototypes | Flexible | — |
+
+### §4.8 Business (3 skills)
+
+| Skill | Trigger | Type | Command |
+|-------|---------|------|---------|
+| `seo-optimizer` | Technical SEO, meta tags, structured data | Flexible | `/seo` |
+| `content-research-writer` | Research methodology, long-form content | Flexible | — |
+| `content-creator` | Marketing copy, social media, brand voice | Flexible | — |
+
+### §4.9 Document Processing (3 skills)
+
+| Skill | Trigger | Type | Command |
+|-------|---------|------|---------|
+| `docx-processing` | Word doc generation, template filling | Flexible | — |
+| `pdf-processing` | PDF generation, form filling, OCR | Flexible | — |
+| `xlsx-processing` | Excel manipulation, formulas, charts | Flexible | — |
+
+### §4.10 Productivity (1 skill)
+
+| Skill | Trigger | Type | Command |
+|-------|---------|------|---------|
+| `file-organizer` | Project structure, file naming | Flexible | — |
+
+### §4.11 Communication (1 skill)
+
+| Skill | Trigger | Type | Command |
+|-------|---------|------|---------|
+| `email-composer` | Professional email drafting | Flexible | `/email` |
 
 **Rigid skills:** Follow exactly as documented. No adaptation. No shortcuts.
 **Flexible skills:** Adapt principles to context while preserving core intent.
 
 ---
 
-## §5 AGENT DISPATCH TABLE (9 Agents)
+## §5 AGENT DISPATCH TABLE (18 Agents)
 
 | Agent | Purpose | When to Dispatch | Expected Output |
 |-------|---------|-----------------|-----------------|
@@ -180,10 +229,19 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 | `loop-orchestrator` | Manage autonomous loops | During Ralph-style iterative development | RALPH_STATUS blocks, task selection, exit evaluation |
 | `spec-writer` | Write specifications | When features need behavioral specs | JTBD specs with Given/When/Then acceptance criteria |
 | `acceptance-judge` | Evaluate subjective quality | When objective tests aren't sufficient | Scored rubric with pass/fail and improvement suggestions |
+| `frontend-developer` | Three-phase frontend dev with context discovery | Frontend feature work | Component code with tests |
+| `ui-ux-designer` | Design system generation, component specs | Design system creation | Style guides, component specs |
+| `backend-architect` | Service boundaries, contract-first API | Service architecture | API contracts, scaling plan |
+| `context-manager` | Project context tracking, dependency mapping | Context discovery | Dependency map, tech stack summary |
+| `database-architect` | Multi-DB strategy, event sourcing | Database design | Schema, migrations, indexes |
+| `architect-reviewer` | Architecture review, tech debt assessment | Architecture decisions | ADR, scalability assessment |
+| `typescript-pro` | Advanced type patterns, branded types | TypeScript type design | Type definitions, utility types |
+| `task-decomposer` | Hierarchical task breakdown | Task planning | Task tree, dependency graph |
+| `mobile-developer` | Cross-platform mobile patterns | Mobile development | Platform-specific code |
 
 ---
 
-## §6 COMMAND REFERENCE (14 Commands)
+## §6 COMMAND REFERENCE (29 Commands)
 
 | Command | Skill | Description | Usage |
 |---------|-------|-------------|-------|
@@ -201,6 +259,21 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 | `/ralph` | autonomous-loop | Start Ralph autonomous loop | For iterative autonomous development |
 | `/specs` | spec-writing | Write or audit specifications | When defining feature requirements |
 | `/loop` | autonomous-loop | Start loop iteration | Alias for /ralph |
+| `/frontend` | senior-frontend | Senior frontend development | Frontend tasks |
+| `/backend` | senior-backend | Senior backend development | Backend tasks |
+| `/architect` | senior-architect | Architecture design | Architecture decisions |
+| `/fullstack` | senior-fullstack | Full-stack development | Cross-stack tasks |
+| `/design-system` | ui-design-system | Design system generation | Design system work |
+| `/ui-ux` | ui-ux-pro-max | UI/UX design intelligence | UI/UX design |
+| `/mobile` | mobile-design | Mobile design patterns | Mobile development |
+| `/clean` | clean-code | Clean code review | Code quality |
+| `/devops` | senior-devops | DevOps and infrastructure | Infrastructure tasks |
+| `/agent` | agent-development | AI agent development | Agent building |
+| `/seo` | seo-optimizer | SEO optimization | SEO tasks |
+| `/email` | email-composer | Email composition | Email drafting |
+| `/mcp` | mcp-builder | MCP server development | MCP server work |
+| `/commit` | git-commit-helper | Git commit helper | Committing code |
+| `/decompose` | task-decomposition | Task decomposition | Breaking down tasks |
 
 ---
 
@@ -582,7 +655,7 @@ npx skills update                           # Update all
 ```
 
 ### When to Search
-- Task requires domain-specific knowledge not covered by 32 toolkit skills
+- Task requires domain-specific knowledge not covered by 61 toolkit skills
 - User asks about capabilities the toolkit doesn't have
 - A specialized framework or technology needs dedicated guidance
 

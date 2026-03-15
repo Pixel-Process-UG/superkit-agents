@@ -24,7 +24,7 @@ npx @fwartner/claude-toolkit --all
 
 ## What's Included
 
-| 32 Skills | 9 Agents | 14 Commands | Hooks | Memory System |
+| 61 Skills | 18 Agents | 29 Commands | Hooks | Memory System |
 |:---------:|:--------:|:-----------:|:-----:|:-------------:|
 | Structured workflows for every phase of development | Specialized sub-agents for parallel work | Slash commands that trigger skills | Session-start context injection | Persistent project knowledge |
 
@@ -34,7 +34,7 @@ Now with **Ralph integration** — autonomous iterative development loops with c
 
 ## Skills
 
-### Core (4)
+### Core (6)
 
 | Skill | Description |
 |-------|-------------|
@@ -42,8 +42,10 @@ Now with **Ralph integration** — autonomous iterative development loops with c
 | `self-learning` | Auto-discover and remember project context |
 | `resilient-execution` | Never fail — retry with alternative approaches |
 | `circuit-breaker` | Loop stagnation detection, rate limiting, and recovery patterns |
+| `auto-improvement` | Self-improving system, tracks effectiveness, learns from errors |
+| `verification-before-completion` | 5-step verification gate before any completion claim |
 
-### Process & Workflow (7)
+### Process & Workflow (9)
 
 | Skill | Description |
 |-------|-------------|
@@ -54,8 +56,10 @@ Now with **Ralph integration** — autonomous iterative development loops with c
 | `subagent-driven-development` | Same-session execution with two-stage review gates |
 | `dispatching-parallel-agents` | Coordinate multiple independent agents in parallel |
 | `autonomous-loop` | Ralph-style iterative development with autonomous planning and building loops |
+| `ralph-status` | Structured status reporting with exit signal protocol |
+| `task-decomposition` | Hierarchical breakdown, dependency mapping, parallelization |
 
-### Quality Assurance (8)
+### Quality Assurance (17)
 
 | Skill | Description |
 |-------|-------------|
@@ -67,6 +71,15 @@ Now with **Ralph integration** — autonomous iterative development loops with c
 | `performance-optimization` | Profiling, caching, bundle optimization, Web Vitals |
 | `acceptance-testing` | Acceptance-driven backpressure with behavioral validation gates |
 | `llm-as-judge` | Non-deterministic validation for subjective quality criteria |
+| `senior-frontend` | React/Next.js/TypeScript specialist, >85% test coverage |
+| `senior-backend` | API design, microservices, event-driven architecture |
+| `senior-architect` | System design, scalability, trade-off analysis, ADRs |
+| `senior-fullstack` | End-to-end development across the full stack |
+| `clean-code` | SOLID, DRY, code smells, refactoring patterns |
+| `react-best-practices` | React hooks, context, suspense, server components |
+| `webapp-testing` | Playwright-based web testing, screenshots, browser logs |
+| `senior-prompt-engineer` | Prompt design, optimization, chain-of-thought |
+| `senior-data-scientist` | ML pipelines, statistical analysis, experiment design |
 
 ### Design (3)
 
@@ -86,20 +99,56 @@ Now with **Ralph integration** — autonomous iterative development loops with c
 | `spec-writing` | JTBD-based specification writing with acceptance criteria |
 | `reverse-engineering-specs` | Generate implementation-free specs from existing codebases |
 
-### Operations (3)
+### Operations (7)
 
 | Skill | Description |
 |-------|-------------|
 | `deployment` | CI/CD pipeline generation and deploy checklists |
 | `using-git-worktrees` | Isolated development environments with git worktrees |
 | `finishing-a-development-branch` | Structured branch completion with merge options |
+| `git-commit-helper` | Conventional commits, semantic versioning, changelogs |
+| `senior-devops` | CI/CD, Docker, Kubernetes, infrastructure-as-code |
+| `mcp-builder` | MCP server development, tools, resources, transport layers |
+| `agent-development` | Building AI agents, tool use, memory, planning |
 
-### Status & Reporting (2)
+### Creative (6)
 
 | Skill | Description |
 |-------|-------------|
-| `ralph-status` | Structured status reporting with exit signal protocol |
-| `verification-before-completion` | 5-step verification gate before any completion claim |
+| `ui-ux-pro-max` | Full UI/UX design intelligence with 67 styles, 161 palettes, 57 fonts |
+| `ui-design-system` | Design tokens, component libraries, Tailwind CSS, responsive patterns |
+| `canvas-design` | HTML Canvas, SVG, data visualization, generative art |
+| `mobile-design` | React Native, Flutter, SwiftUI, platform HIG compliance |
+| `ux-researcher-designer` | User research, personas, journey maps, usability testing |
+| `artifacts-builder` | Generate standalone artifacts, interactive demos, prototypes |
+
+### Business (3)
+
+| Skill | Description |
+|-------|-------------|
+| `seo-optimizer` | Technical SEO, meta tags, structured data, Core Web Vitals |
+| `content-research-writer` | Research methodology, long-form content, citations |
+| `content-creator` | Marketing copy, social media, brand voice |
+
+### Document Processing (3)
+
+| Skill | Description |
+|-------|-------------|
+| `docx-processing` | Word document generation, template filling |
+| `pdf-processing` | PDF generation, form filling, OCR, merge/split |
+| `xlsx-processing` | Excel manipulation, formulas, charts |
+
+### Productivity (1)
+
+| Skill | Description |
+|-------|-------------|
+| `file-organizer` | Project structure, file naming, directory architecture |
+
+### Communication (1)
+
+| Skill | Description |
+|-------|-------------|
+| `email-composer` | Professional email drafting, tone adjustment |
 
 ---
 
@@ -123,6 +172,21 @@ Slash commands trigger skills directly in Claude Code:
 | `/ralph` | Start Ralph autonomous development loop |
 | `/specs` | Write or audit specifications |
 | `/loop` | Start autonomous loop iteration |
+| `/frontend` | Senior frontend development |
+| `/backend` | Senior backend development |
+| `/architect` | Architecture design and review |
+| `/fullstack` | Full-stack development |
+| `/design-system` | Design system generation |
+| `/ui-ux` | UI/UX design intelligence |
+| `/mobile` | Mobile design patterns |
+| `/clean` | Clean code review |
+| `/devops` | DevOps and infrastructure |
+| `/agent` | AI agent development |
+| `/seo` | SEO optimization |
+| `/email` | Email composition |
+| `/mcp` | MCP server development |
+| `/commit` | Git commit helper |
+| `/decompose` | Task decomposition |
 
 ---
 
@@ -141,6 +205,15 @@ Specialized sub-agents dispatched for parallel or focused work:
 | `loop-orchestrator` | Manages autonomous development loop iterations |
 | `spec-writer` | Generates JTBD specifications with acceptance criteria |
 | `acceptance-judge` | Evaluates subjective quality via LLM-as-judge pattern |
+| `frontend-developer` | Three-phase frontend dev with context discovery, development, handoff |
+| `ui-ux-designer` | Design system generation, component specs, style guides |
+| `backend-architect` | Service boundaries, contract-first API, scaling |
+| `context-manager` | Project context tracking, dependency mapping |
+| `database-architect` | Multi-DB strategy, domain-driven design, event sourcing |
+| `architect-reviewer` | Architecture review, scalability assessment, tech debt |
+| `typescript-pro` | Advanced type patterns, conditional types, branded types |
+| `task-decomposer` | Hierarchical task breakdown, parallelization strategy |
+| `mobile-developer` | Cross-platform mobile, platform-specific patterns |
 
 ---
 
@@ -270,6 +343,7 @@ Four persistent memory files store project knowledge across sessions:
 | `learned-patterns.md` | Coding conventions and patterns |
 | `user-preferences.md` | Communication and workflow preferences |
 | `decisions-log.md` | Architectural decisions with rationale |
+| `improvement-log.md` | Self-improvement tracking and effectiveness metrics |
 
 - Auto-loaded on session start via the session-start hook
 - Updated by the `self-learning` skill (`/learn`)
@@ -345,7 +419,7 @@ reverse-engineering-specs   → generate specs from existing code
 
 ```
 templates/
-├── skills/                    # 32 skill directories
+├── skills/                    # 61 skill directories
 │   ├── using-toolkit/SKILL.md
 │   ├── planning/SKILL.md
 │   ├── brainstorming/SKILL.md
@@ -378,7 +452,7 @@ templates/
 │   ├── reverse-engineering-specs/SKILL.md  # NEW: Legacy specs
 │   ├── acceptance-testing/SKILL.md     # NEW: Backpressure
 │   └── llm-as-judge/SKILL.md          # NEW: Subjective quality
-├── agents/                    # 9 agent definitions
+├── agents/                    # 18 agent definitions
 │   ├── planner.md
 │   ├── code-reviewer.md
 │   ├── prd-writer.md
@@ -388,7 +462,7 @@ templates/
 │   ├── loop-orchestrator.md            # NEW
 │   ├── spec-writer.md                  # NEW
 │   └── acceptance-judge.md             # NEW
-├── commands/                  # 14 slash commands
+├── commands/                  # 29 slash commands
 │   ├── plan.md
 │   ├── brainstorm.md
 │   ├── execute.md
@@ -460,7 +534,7 @@ Add your own skills alongside toolkit ones. Each skill is a directory containing
 
 ### Find More Skills
 
-When the toolkit's 32 skills don't cover your needs:
+When the toolkit's 61 skills don't cover your needs:
 
 ```bash
 npx skills find [query]                    # Search the ecosystem
