@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0] - 2026-03-16
+
+### Changed
+- **CLAUDE.md template** (~30% smaller): Removed §1-§3 (duplicated in using-toolkit), condensed §4 skill catalog to single-line format, replaced §6 command reference with pointer to using-toolkit
+- **using-toolkit/SKILL.md** (~20% smaller): Condensed phases, anti-patterns, integration points, core rules, and skill types sections
+- **Context7 boilerplate** condensed across 11 skill files: replaced 11-14 line boilerplate with 3-line compact reference
+- **Agent Coordination sections** compacted in 10 agent templates: replaced verbose tables with single-line dispatch references
+- **dispatching-parallel-agents** Agent Tool Reference condensed from 44 lines to 13 lines
+- **Session-start hook** streamlined: removed verbose wrapper tags, reduced by ~50 tokens per session
+- **Version bumped** to 1.3.0 in package.json, cli.ts
+- **Tests updated** to match new CLAUDE.md content structure
+
+### Estimated Impact
+- ~2,500+ tokens saved per session through deduplication and condensing
+- No functional changes — all skills, agents, commands, and hooks work identically
+
 ## [1.2.0] - 2026-03-15
 
 ### Added

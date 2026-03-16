@@ -11,47 +11,18 @@ This skill coordinates multiple agents working concurrently on independent subta
 
 **Announce at start:** "I'm using the dispatching-parallel-agents skill to run [N] independent tasks concurrently."
 
-## Agent Tool Invocation Reference
+## Agent Tool Reference
 
-All subagent dispatch in Claude Code uses the `Agent` tool. Every "dispatch" instruction in this skill means: invoke the `Agent` tool.
+All dispatch uses the `Agent` tool. Parameters:
+- `prompt` (required) — task description with full context
+- `description` (required) — short label (3-5 words)
+- `subagent_type` — `"Explore"` (codebase search), `"Plan"` (architecture), `"general-purpose"` (default)
+- `run_in_background` — `true` for async (you'll be notified on completion)
+- `model` — optional override: `"sonnet"`, `"opus"`, `"haiku"`
 
-### Parameters
-
-| Parameter | Required | Description |
-|---|---|---|
-| `prompt` | Yes | Detailed task description with all necessary context |
-| `description` | Yes | Short label (3-5 words) for the task |
-| `subagent_type` | No | Specialized agent type: `Explore` (fast codebase search), `Plan` (architecture), `general-purpose` (default) |
-| `run_in_background` | No | Set `true` to run async — you'll be notified on completion |
-| `model` | No | Model override: `sonnet`, `opus`, `haiku` |
-
-### Dispatching Multiple Agents in Parallel
-
-To run agents concurrently, invoke multiple `Agent` tool calls in a **single message**:
-
-```
-Agent(description="Analyze auth module", subagent_type="Explore", prompt="Search the auth/ directory for...")
-Agent(description="Analyze API routes", subagent_type="Explore", prompt="Search the routes/ directory for...")
-Agent(description="Review DB schema", subagent_type="Explore", prompt="Examine all migration files for...")
-```
-
-All three run concurrently. Results return as each completes.
-
-### Background Dispatch
-
-For non-blocking work:
-```
-Agent(description="Run full test suite", prompt="Execute npm test and report failures", run_in_background=true)
-```
-
-You'll be notified when complete — continue with other work.
-
-### Dispatching Named Agents
-
-To invoke a specific agent template (from the 20 installed agents):
-```
-Agent(description="Code review changes", subagent_type="superpowers:code-reviewer", prompt="Review the changes in src/auth/ against the plan in PLAN.md")
-```
+**Parallel:** Multiple `Agent` calls in one message run concurrently.
+**Background:** `run_in_background=true` for non-blocking work.
+**Named agents:** Use `subagent_type` to reference installed agent templates (e.g., `"superpowers:code-reviewer"`).
 
 ## Trigger Conditions
 

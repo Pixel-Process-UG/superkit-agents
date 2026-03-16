@@ -1,258 +1,36 @@
 # @pixelandprocess/superkit-agents — Agent Operating Manual
 
-
-
-## §1 IDENTITY & PURPOSE
-
-You are an AI development agent enhanced with the **@pixelandprocess/superkit-agents** (v1.2.0). This toolkit provides structured workflows, quality gates, and autonomous development capabilities through a comprehensive skill system.
-
-**Capabilities:** 64 skills | 20 agents | 31 commands | hooks | memory system
-
-**Self-learning and auto-improvement are ALWAYS active.** These skills run automatically on every session and cannot be disabled. They track effectiveness, learn from errors, and continuously improve agent behavior.
-
-**Operating Philosophy:**
-
-- Structure enables autonomy — deterministic processes produce reliable outcomes
-- Backpressure ensures quality — tests, builds, lints, and reviews create self-correcting feedback loops
-- Evidence before assertions — never claim completion without verifiable proof
-- Eventual consistency through iteration — Ralph-style loops converge on correctness
-- Subagent delegation maximizes throughput — parallelize reads, serialize builds
-
----
-
-## §2 HARD-GATES (Non-Negotiable Rules)
-
-These rules are **absolute requirements**. They cannot be relaxed, skipped, or rationalized away under any circumstances.
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ HARD-GATE         │ RULE                                               │
-├─────────────────────────────────────────────────────────────────────────┤
-│ [HARD-GATE:PLAN]  │ No code without an approved plan                   │
-│ [HARD-GATE:TDD]   │ No production code without a failing test first    │
-│ [HARD-GATE:VERIFY] │ No completion claims without fresh evidence       │
-│ [HARD-GATE:REVIEW] │ No merge without code review                     │
-│ [HARD-GATE:SKILL] │ Must invoke matching skill before any action       │
-│ [HARD-GATE:SUBAGENT] │ Dispatch subagents for independent parallel work│
-│ [HARD-GATE:RETRY] │ Try ≥3 approaches before escalating               │
-│ [HARD-GATE:EXIT]  │ Dual-condition exit gate for autonomous loops      │
-│ [HARD-GATE:ACCEPT]│ Cannot claim done without acceptance tests passing │
-│ [HARD-GATE:SPEC]  │ Specs must never contain implementation details    │
-│ [HARD-GATE:STATUS]│ Every loop iteration ends with RALPH_STATUS block  │
-│ [HARD-GATE:PROTECT]│ Never delete config files during autonomous ops   │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-**Enforcement:** If you are about to violate a HARD-GATE, STOP immediately. Re-read the relevant skill. There are no exceptions.
-
----
-
-## §3 WORKFLOW STATE MACHINES
-
-### Feature Development
-
-```
-  ┌───────────┐    ┌──────┐    ┌─────────┐    ┌────────┐    ┌────────┐    ┌───────┐
-  │ BRAINSTORM│───▶│ PLAN │───▶│ EXECUTE │───▶│ REVIEW │───▶│ VERIFY │───▶│ MERGE │
-  └───────────┘    └──────┘    └─────────┘    └────────┘    └────────┘    └───────┘
-       /brainstorm   /plan      /execute        /review       /verify    finish-branch
-```
-
-### Bug Fix
-
-```
-  ┌───────┐    ┌───────────┐    ┌──────────┐    ┌────────┐    ┌────────┐
-  │ DEBUG │───▶│ REPRODUCE │───▶│ FIX(TDD) │───▶│ REVIEW │───▶│ VERIFY │
-  └───────┘    └───────────┘    └──────────┘    └────────┘    └────────┘
-    /debug      write test        /tdd            /review       /verify
-```
-
-### Ralph Autonomous Loop
-
-```
-  ┌───────────┐    ┌───────────┐    ┌────────────┐    ┌───────────┐
-  │  PLANNING │───▶│ BUILDING  │───▶│   STATUS   │───▶│ EXIT GATE │
-  │   MODE    │    │   MODE    │    │   CHECK    │    │  (dual)   │
-  └───────────┘    └───────────┘    └────────────┘    └─────┬─────┘
-       ▲                                                     │
-       │              FAIL: continue loop                    │
-       └─────────────────────────────────────────────────────┘
-                      PASS: exit loop
-```
-
-### Specification Writing
-
-```
-  ┌──────┐    ┌────────┐    ┌───────┐    ┌───────┐    ┌───────────┐
-  │ JTBD │───▶│ TOPICS │───▶│ SPECS │───▶│ AUDIT │───▶│ STORY MAP │
-  └──────┘    └────────┘    └───────┘    └───────┘    └───────────┘
-   identify    break down    write GWT    validate     plan releases
-   jobs        concerns      criteria     quality      (SLC)
-```
-
-### Documentation
-
-```
-  ┌─────────┐    ┌──────────┐    ┌────────┐
-  │ ANALYZE │───▶│ GENERATE │───▶│ REVIEW │
-  └─────────┘    └──────────┘    └────────┘
-    /learn         /docs           /review
-```
+> See `using-toolkit` skill for identity, hard-gates, workflow state machines, and full command reference.
 
 ---
 
 ## §4 SKILL CATALOG (64 Skills)
 
-### §4.1 Core (6 skills)
+**Core (6):** `using-toolkit`, `self-learning` `/learn`, `resilient-execution`, `circuit-breaker`, `auto-improvement`, `verification-before-completion` `/verify`
 
+**Process (9):** `planning` `/plan`, `brainstorming` `/brainstorm`, `task-management`, `executing-plans` `/execute`, `subagent-driven-development`, `dispatching-parallel-agents`, `autonomous-loop` `/ralph` `/loop`, `ralph-status`, `task-decomposition` `/decompose`
 
-| Skill                            | Trigger                                                         | Type  | Command   |
-| -------------------------------- | --------------------------------------------------------------- | ----- | --------- |
-| `using-toolkit`                  | Session start, any new conversation                             | Rigid | —         |
-| `self-learning`                  | Starting on unfamiliar project, receiving corrections           | Rigid | `/learn`  |
-| `resilient-execution`            | Any approach fails — retry with alternatives                    | Rigid | —         |
-| `circuit-breaker`                | Autonomous loops, repeated operations, stagnation               | Rigid | —         |
-| `auto-improvement`               | Self-improving system, tracks effectiveness, learns from errors | Rigid | —         |
-| `verification-before-completion` | Before claiming ANY task is complete                            | Rigid | `/verify` |
+**QA (17):** `code-review` `/review`, `test-driven-development` `/tdd`, `testing-strategy`, `systematic-debugging` `/debug`, `security-review`, `performance-optimization`, `acceptance-testing`, `llm-as-judge`, `senior-frontend` `/frontend`, `senior-backend` `/backend`, `senior-architect` `/architect`, `senior-fullstack` `/fullstack`, `clean-code` `/clean`, `react-best-practices`, `webapp-testing`, `senior-prompt-engineer`, `senior-data-scientist`
 
+**Docs (5):** `prd-generation` `/prd`, `tech-docs-generator` `/docs`, `writing-skills`, `spec-writing` `/specs`, `reverse-engineering-specs`
 
-### §4.2 Process & Workflow (9 skills)
+**Design (3):** `api-design`, `frontend-ui-design`, `database-schema-design`
 
+**Ops (7):** `deployment`, `using-git-worktrees` `/worktree`, `finishing-a-development-branch`, `git-commit-helper` `/commit`, `senior-devops` `/devops`, `mcp-builder` `/mcp`, `agent-development` `/agent`
 
-| Skill                         | Trigger                                                     | Type  | Command           |
-| ----------------------------- | ----------------------------------------------------------- | ----- | ----------------- |
-| `planning`                    | Before ANY implementation work                              | Rigid | `/plan`           |
-| `brainstorming`               | Before creative work — features, designs, ideas             | Rigid | `/brainstorm`     |
-| `task-management`             | Breaking work into tracked steps                            | Rigid | —                 |
-| `executing-plans`             | Executing approved plan documents                           | Rigid | `/execute`        |
-| `subagent-driven-development` | Multi-task execution with review gates                      | Rigid | —                 |
-| `dispatching-parallel-agents` | Running independent tasks concurrently                      | Rigid | —                 |
-| `autonomous-loop`             | Ralph-style iterative autonomous development                | Rigid | `/ralph`, `/loop` |
-| `ralph-status`                | Structured status reporting with exit signal protocol       | Rigid | —                 |
-| `task-decomposition`          | Hierarchical breakdown, dependency mapping, parallelization | Rigid | `/decompose`      |
+**Creative (6):** `ui-ux-pro-max` `/ui-ux`, `ui-design-system` `/design-system`, `canvas-design`, `mobile-design` `/mobile`, `ux-researcher-designer`, `artifacts-builder`
 
+**Business (3):** `seo-optimizer` `/seo`, `content-research-writer`, `content-creator`
 
-### §4.3 Quality Assurance (17 skills)
+**Doc Processing (3):** `docx-processing`, `pdf-processing`, `xlsx-processing`
 
+**Productivity (1):** `file-organizer`
 
-| Skill                      | Trigger                                               | Type     | Command      |
-| -------------------------- | ----------------------------------------------------- | -------- | ------------ |
-| `code-review`              | After completing tasks, before committing             | Rigid    | `/review`    |
-| `test-driven-development`  | Writing any new code                                  | Rigid    | `/tdd`       |
-| `testing-strategy`         | Choosing testing approach for a project               | Flexible | —            |
-| `systematic-debugging`     | Investigating bugs, errors, unexpected behavior       | Rigid    | `/debug`     |
-| `security-review`          | Reviewing for vulnerabilities, auth, input validation | Flexible | —            |
-| `performance-optimization` | Optimizing speed, load times, bundle size             | Flexible | —            |
-| `acceptance-testing`       | Validating implementation meets spec requirements     | Rigid    | —            |
-| `llm-as-judge`             | Evaluating subjective quality (tone, UX, readability) | Flexible | —            |
-| `senior-frontend`          | React/Next.js/TypeScript specialist                   | Flexible | `/frontend`  |
-| `senior-backend`           | API design, microservices, event-driven architecture  | Flexible | `/backend`   |
-| `senior-architect`         | System design, scalability, trade-off analysis        | Flexible | `/architect` |
-| `senior-fullstack`         | End-to-end full-stack development                     | Flexible | `/fullstack` |
-| `clean-code`               | SOLID, DRY, code smells, refactoring patterns         | Flexible | `/clean`     |
-| `react-best-practices`     | React hooks, context, suspense, server components     | Flexible | —            |
-| `webapp-testing`           | Playwright-based web testing, screenshots             | Flexible | —            |
-| `senior-prompt-engineer`   | Prompt design, optimization, chain-of-thought         | Flexible | —            |
-| `senior-data-scientist`    | ML pipelines, statistical analysis, experiment design | Flexible | —            |
+**Communication (1):** `email-composer` `/email`
 
+**Frameworks (3):** `laravel-specialist` `/laravel`, `php-specialist` `/php`, `laravel-boost`
 
-### §4.4 Documentation (5 skills)
-
-
-| Skill                       | Trigger                                             | Type     | Command  |
-| --------------------------- | --------------------------------------------------- | -------- | -------- |
-| `prd-generation`            | Generating Product Requirements Documents           | Flexible | `/prd`   |
-| `tech-docs-generator`       | Generating or updating technical documentation      | Flexible | `/docs`  |
-| `writing-skills`            | Creating new skills, commands, or agent definitions | Rigid    | —        |
-| `spec-writing`              | Writing specifications with JTBD methodology        | Rigid    | `/specs` |
-| `reverse-engineering-specs` | Generating specs from existing codebases            | Rigid    | —        |
-
-
-### §4.5 Design (3 skills)
-
-
-| Skill                    | Trigger                                           | Type     | Command |
-| ------------------------ | ------------------------------------------------- | -------- | ------- |
-| `api-design`             | Designing API endpoints, generating OpenAPI specs | Flexible | —       |
-| `frontend-ui-design`     | Component architecture, responsive design, a11y   | Flexible | —       |
-| `database-schema-design` | Data modeling, migrations, indexing               | Flexible | —       |
-
-
-### §4.6 Operations (7 skills)
-
-
-| Skill                            | Trigger                                           | Type     | Command     |
-| -------------------------------- | ------------------------------------------------- | -------- | ----------- |
-| `deployment`                     | Setting up CI/CD pipelines and deploy checklists  | Flexible | —           |
-| `using-git-worktrees`            | Creating isolated development environments        | Rigid    | `/worktree` |
-| `finishing-a-development-branch` | Completing branch work, preparing to merge        | Rigid    | —           |
-| `git-commit-helper`              | Conventional commits, semantic versioning         | Flexible | `/commit`   |
-| `senior-devops`                  | CI/CD, Docker, Kubernetes, infrastructure-as-code | Flexible | `/devops`   |
-| `mcp-builder`                    | MCP server development, tools, resources          | Flexible | `/mcp`      |
-| `agent-development`              | Building AI agents, tool use, memory, planning    | Flexible | `/agent`    |
-
-
-### §4.7 Creative (6 skills)
-
-
-| Skill                    | Trigger                                 | Type     | Command          |
-| ------------------------ | --------------------------------------- | -------- | ---------------- |
-| `ui-ux-pro-max`          | Full UI/UX design intelligence          | Flexible | `/ui-ux`         |
-| `ui-design-system`       | Design tokens, component libraries      | Flexible | `/design-system` |
-| `canvas-design`          | HTML Canvas, SVG, data visualization    | Flexible | —                |
-| `mobile-design`          | React Native, Flutter, SwiftUI          | Flexible | `/mobile`        |
-| `ux-researcher-designer` | User research, personas, journey maps   | Flexible | —                |
-| `artifacts-builder`      | Standalone artifacts, demos, prototypes | Flexible | —                |
-
-
-### §4.8 Business (3 skills)
-
-
-| Skill                     | Trigger                                   | Type     | Command |
-| ------------------------- | ----------------------------------------- | -------- | ------- |
-| `seo-optimizer`           | Technical SEO, meta tags, structured data | Flexible | `/seo`  |
-| `content-research-writer` | Research methodology, long-form content   | Flexible | —       |
-| `content-creator`         | Marketing copy, social media, brand voice | Flexible | —       |
-
-
-### §4.9 Document Processing (3 skills)
-
-
-| Skill             | Trigger                               | Type     | Command |
-| ----------------- | ------------------------------------- | -------- | ------- |
-| `docx-processing` | Word doc generation, template filling | Flexible | —       |
-| `pdf-processing`  | PDF generation, form filling, OCR     | Flexible | —       |
-| `xlsx-processing` | Excel manipulation, formulas, charts  | Flexible | —       |
-
-
-### §4.10 Productivity (1 skill)
-
-
-| Skill            | Trigger                        | Type     | Command |
-| ---------------- | ------------------------------ | -------- | ------- |
-| `file-organizer` | Project structure, file naming | Flexible | —       |
-
-
-### §4.11 Communication (1 skill)
-
-
-| Skill            | Trigger                     | Type     | Command  |
-| ---------------- | --------------------------- | -------- | -------- |
-| `email-composer` | Professional email drafting | Flexible | `/email` |
-
-
-### §4.12 Frameworks & Languages (3 skills)
-
-
-| Skill                | Trigger                                                       | Type     | Command    |
-| -------------------- | ------------------------------------------------------------- | -------- | ---------- |
-| `laravel-specialist` | Laravel development — Eloquent, Blade, Livewire, queues, Pest | Flexible | `/laravel` |
-| `php-specialist`     | Modern PHP 8.x — PSR standards, static analysis, Composer     | Flexible | `/php`     |
-| `laravel-boost`      | Laravel Boost performance optimization                        | Flexible | —          |
-
-
-**Rigid skills:** Follow exactly as documented. No adaptation. No shortcuts.
-**Flexible skills:** Adapt principles to context while preserving core intent.
+**Rigid skills:** Follow exactly. **Flexible skills:** Adapt to context.
 
 ---
 
@@ -285,42 +63,9 @@ These rules are **absolute requirements**. They cannot be relaxed, skipped, or r
 
 ---
 
-## §6 COMMAND REFERENCE (31 Commands)
+## §6 COMMAND REFERENCE
 
-
-| Command          | Skill                          | Description                      | Usage                                |
-| ---------------- | ------------------------------ | -------------------------------- | ------------------------------------ |
-| `/plan`          | planning                       | Start structured planning        | Before any implementation            |
-| `/brainstorm`    | brainstorming                  | Explore ideas and create designs | Before creative/design work          |
-| `/execute`       | executing-plans                | Execute an approved plan         | After plan approval                  |
-| `/tdd`           | test-driven-development        | Start TDD workflow               | When writing any new code            |
-| `/debug`         | systematic-debugging           | Start systematic debugging       | When investigating bugs              |
-| `/review`        | code-review                    | Request code review              | After completing implementation      |
-| `/verify`        | verification-before-completion | Verify completion claim          | Before claiming done                 |
-| `/prd`           | prd-generation                 | Generate a PRD                   | When documenting requirements        |
-| `/learn`         | self-learning                  | Scan and learn project           | Starting on unfamiliar project       |
-| `/docs`          | tech-docs-generator            | Generate technical docs          | When code needs documentation        |
-| `/worktree`      | using-git-worktrees            | Set up git worktree              | When needing isolated environment    |
-| `/ralph`         | autonomous-loop                | Start Ralph autonomous loop      | For iterative autonomous development |
-| `/specs`         | spec-writing                   | Write or audit specifications    | When defining feature requirements   |
-| `/loop`          | autonomous-loop                | Start loop iteration             | Alias for /ralph                     |
-| `/frontend`      | senior-frontend                | Senior frontend development      | Frontend tasks                       |
-| `/backend`       | senior-backend                 | Senior backend development       | Backend tasks                        |
-| `/architect`     | senior-architect               | Architecture design              | Architecture decisions               |
-| `/fullstack`     | senior-fullstack               | Full-stack development           | Cross-stack tasks                    |
-| `/design-system` | ui-design-system               | Design system generation         | Design system work                   |
-| `/ui-ux`         | ui-ux-pro-max                  | UI/UX design intelligence        | UI/UX design                         |
-| `/mobile`        | mobile-design                  | Mobile design patterns           | Mobile development                   |
-| `/clean`         | clean-code                     | Clean code review                | Code quality                         |
-| `/devops`        | senior-devops                  | DevOps and infrastructure        | Infrastructure tasks                 |
-| `/agent`         | agent-development              | AI agent development             | Agent building                       |
-| `/seo`           | seo-optimizer                  | SEO optimization                 | SEO tasks                            |
-| `/email`         | email-composer                 | Email composition                | Email drafting                       |
-| `/mcp`           | mcp-builder                    | MCP server development           | MCP server work                      |
-| `/commit`        | git-commit-helper              | Git commit helper                | Committing code                      |
-| `/decompose`     | task-decomposition             | Task decomposition               | Breaking down tasks                  |
-| `/laravel`       | laravel-specialist             | Laravel development              | Laravel project work                 |
-| `/php`           | php-specialist                 | Modern PHP development           | PHP project work                     |
+See `using-toolkit` skill for full command list (31 commands).
 
 
 ---

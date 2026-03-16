@@ -258,13 +258,7 @@ class ResponsiveLayout extends StatelessWidget {
 
 ## Documentation Lookup (Context7)
 
-When you need up-to-date documentation for frameworks/libraries used in this skill:
-
-1. **Resolve:** `mcp__context7__resolve-library-id` with the library name
-2. **Query:** `mcp__context7__query-docs` with the resolved ID and your question
-3. **Apply:** Use returned docs as authoritative, overriding memorized knowledge
-
-### Libraries for this skill
+Use `mcp__context7__resolve-library-id` then `mcp__context7__query-docs` for up-to-date docs. Returned docs override memorized knowledge.
 - `react-native` — for component API, navigation, or platform-specific modules
 - `flutter` — for widget catalog, state management, or platform channels
 

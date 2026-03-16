@@ -37,11 +37,7 @@ When reviewing:
 
 ## Agent Coordination
 
-When this agent identifies quality concerns beyond spec compliance, use the `Agent` tool:
-
-| Need | Dispatch To | How |
-|---|---|---|
-| Code quality review | `quality-reviewer` agent | `Agent(description="Quality review", prompt="Review code quality for the implementation of...")` |
+Dispatch via `Agent` tool when needing: `quality-reviewer` (code quality beyond spec compliance).
 
 4. **Rules:**
    - Be strict: requirements mean EXACTLY what they say

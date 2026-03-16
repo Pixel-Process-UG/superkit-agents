@@ -40,7 +40,7 @@ escape_for_json() {
 using_toolkit_escaped=$(escape_for_json "$using_toolkit_content")
 memory_escaped=$(escape_for_json "$memory_context")
 
-session_context="<EXTREMELY_IMPORTANT>\nYou have superkit-agents installed.\n\n**Below is the full content of your 'toolkit:using-toolkit' skill - your introduction to using toolkit skills. For all other skills, use the 'Skill' tool:**\n\n${using_toolkit_escaped}\n\n**Project Memory (loaded from memory files):**\n${memory_escaped}\n</EXTREMELY_IMPORTANT>"
+session_context="<superkit-agents>\n${using_toolkit_escaped}\n\n**Memory:**\n${memory_escaped}\n</superkit-agents>"
 
 # Output context injection as JSON
 # Keep both shapes for compatibility:

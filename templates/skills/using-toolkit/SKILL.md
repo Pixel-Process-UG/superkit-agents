@@ -13,7 +13,7 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 ## Overview
 
-The using-toolkit skill is the master catalog and dispatch system for all 64 skills in the superkit-agents toolkit. It ensures every conversation begins with proper skill identification, prevents rationalization of skill skipping, and provides workflow patterns for common task types. Without this skill, agents operate without structure — with it, they gain deterministic, quality-gated workflows.
+Master catalog and dispatch system for all 64 toolkit skills. Ensures proper skill identification at conversation start.
 
 ## How to Access Skills
 
@@ -23,40 +23,19 @@ The using-toolkit skill is the master catalog and dispatch system for all 64 ski
 
 ## Phase 1: Skill Identification
 
-**At the start of EVERY task, before ANY action (including clarifying questions):**
-
-1. Read the user's request carefully
-2. Scan the skill catalog below for matches
-3. Identify ALL skills that could apply (even at 1% relevance)
-4. Invoke each matching skill using the Skill tool
-
-> **STOP: Do NOT proceed to any response until you have checked for and invoked all relevant skills.**
+Before ANY action: scan catalog, identify ALL matching skills (even 1% relevance), invoke via Skill tool.
 
 ---
 
 ## Phase 2: Skill Prioritization
 
-When multiple skills apply, invoke them in this order:
-
-| Priority | Category | Skills | Purpose |
-|----------|----------|--------|---------|
-| 1 | Process | brainstorming, planning, task-management, autonomous-loop, task-decomposition | HOW to approach |
-| 2 | Specialist | senior-frontend, senior-backend, senior-architect, laravel-specialist, php-specialist | Domain expertise |
-| 3 | Quality | TDD, code-review, testing-strategy, acceptance-testing, clean-code | Validate the work |
-| 4 | Documentation | prd-generation, tech-docs-generator, spec-writing | Capture the work |
-| 5 | Design | api-design, frontend-ui-design, database-schema-design | Guide specifics |
-| 6 | Operations | deployment, git-worktrees, finishing-a-development-branch | Ship the work |
-| 7 | Terminal | ralph-status, verification-before-completion | Report and verify |
+Invoke in order: (1) Process (brainstorming, planning) → (2) Specialist (frontend, backend, architect) → (3) Quality (TDD, review) → (4) Docs → (5) Design → (6) Ops → (7) Terminal (verification).
 
 ---
 
 ## Phase 3: Skill Execution
 
-After invoking skills, follow their instructions precisely:
-- **Rigid skills**: Follow exactly as documented. No adaptation.
-- **Flexible skills**: Adapt principles to context while preserving core intent.
-
-> **STOP: After completing the task, invoke `verification-before-completion` before claiming done.**
+**Rigid skills:** Follow exactly. **Flexible skills:** Adapt to context. Always invoke `verification-before-completion` before claiming done.
 
 ---
 
@@ -242,89 +221,44 @@ After invoking skills, follow their instructions precisely:
 
 ---
 
-## Anti-Patterns / Common Mistakes
+## Anti-Patterns
 
-| What NOT to Do | Why It Fails | What to Do Instead |
-|----------------|-------------|-------------------|
-| Skip skill check for "simple" tasks | Simple tasks become complex; no skill means no guardrails | Always check the catalog, even for one-liners |
-| Invoke skills from memory | Skills evolve between sessions; stale instructions cause errors | Always use the Skill tool to load current version |
-| Read skill files with the Read tool | Bypasses the Skill tool integration layer | Use the Skill tool exclusively |
-| Invoke only one skill when multiple apply | Missing quality gates, incomplete workflows | Invoke ALL matching skills in priority order |
-| Skip verification at the end | Unverified claims lead to broken deliverables | Always invoke `verification-before-completion` last |
-| Respond before checking skills | First response sets wrong trajectory | Skill check is ALWAYS the first action |
-| Use skills as optional guidelines | Inconsistent quality, missed steps | Rigid skills are mandatory; flexible skills adapt but still apply |
+- Never skip skill check for "simple" tasks — always check catalog
+- Never invoke skills from memory — use Skill tool for current version
+- Never read skill files with Read tool — use Skill tool
+- Never skip verification — always invoke `verification-before-completion` last
+- Never respond before checking skills — skill check is ALWAYS first
 
 ---
 
 ## Anti-Rationalization Guards
 
-These thoughts mean STOP — you are rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "I can skip verification" | NO. Verification-before-completion is mandatory. |
-| "Tests aren't needed for this" | TDD is not optional. Write the test first. |
-| "I'll review later" | Review NOW. No merge without review. |
-| "The loop is stuck, skip ahead" | Circuit breaker protocol. Diagnose, don't skip. |
-| "The spec is obvious" | Write it. JTBD methodology. No exceptions. |
-| "I can eyeball the quality" | Use LLM-as-judge or deterministic tests. |
-| "Acceptance criteria are implicit" | Make them explicit. Given/When/Then. Always. |
+If you think "This is just simple / I need context first / Let me explore first / This doesn't need a skill / I remember this skill / The skill is overkill / I'll do one thing first" — STOP. Check for skills FIRST. No exceptions.
 
 ---
 
 ## Integration Points
 
-| Skill | Relationship to using-toolkit |
-|-------|------------------------------|
-| `self-learning` | Loads project context that informs skill selection |
-| `verification-before-completion` | Terminal checkpoint invoked after all other skills |
-| `circuit-breaker` | Safety net when autonomous skill chains stall |
-| `auto-improvement` | Tracks which skills are used and their effectiveness |
-| `planning` | Most common first skill invoked after toolkit check |
-| `resilient-execution` | Activated when any skill's approach fails |
+Key integrations: `self-learning` (project context), `verification-before-completion` (terminal checkpoint), `circuit-breaker` (stall safety), `auto-improvement` (effectiveness tracking), `planning` (most common first skill), `resilient-execution` (failure recovery).
 
 ---
 
-## Core Behavioral Rules
+## Core Rules
 
-1. **Always plan before coding** — No code without an approved plan
-2. **Always use TDD** — No production code without a failing test first
-3. **Always verify completion** — No claims without fresh evidence
-4. **Always review code** — No merge without review
-5. **Always use subagents** — Dispatch for independent parallel tasks without asking
-6. **Always self-learn** — Continuously discover and remember project context
-7. **Never fail** — Try at least 3 approaches before escalating
-8. **Always report status** — Produce RALPH_STATUS in autonomous loops
-9. **Always protect files** — Never delete config files during autonomous operations
-10. **Always write specs** — No implementation without behavioral acceptance criteria
+Plan before coding. TDD always. Verify completion with evidence. Review before merge. Use subagents for parallel work. Self-learn continuously. Try 3 approaches before escalating. Report RALPH_STATUS in loops. Protect config files. Write specs with acceptance criteria.
 
 ---
 
 ## Skill Types
 
-**Rigid** (TDD, debugging, planning, verification, task-management, code-review, autonomous-loop, circuit-breaker, ralph-status, spec-writing, reverse-engineering-specs, acceptance-testing): Follow exactly. Do not adapt away discipline.
-
-**Flexible** (brainstorming, tech-docs, api-design, frontend, database, performance, security-review, testing-strategy, llm-as-judge, prd-generation, laravel-specialist, php-specialist, laravel-boost): Adapt principles to context.
+**Rigid** (TDD, debugging, planning, verification, code-review, autonomous-loop, circuit-breaker, spec-writing, acceptance-testing): Follow exactly.
+**Flexible** (brainstorming, tech-docs, api-design, frontend, database, performance, security-review, prd-generation, laravel-specialist, php-specialist): Adapt to context.
 
 ---
 
 ## Find Missing Skills
 
-When the 64 toolkit skills don't cover the need:
-```bash
-npx skills find [query]                    # Search ecosystem
-npx skills add <owner/repo@skill> -g -y    # Install
-npx skills check                           # Check for updates
-```
-
-Prefer skills with 1K+ weekly installs from reputable sources (vercel-labs, anthropics, microsoft).
+`npx skills find [query]` to search, `npx skills add <owner/repo@skill> -g -y` to install. Prefer 1K+ weekly installs from reputable sources.
 
 ---
 

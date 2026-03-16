@@ -32,18 +32,7 @@ Apply this skill whenever Laravel is the application framework, whether greenfie
 
 ### Documentation Verification Protocol
 
-**[HARD-GATE]** When ANY Laravel API, method signature, config key, or convention is uncertain — DO NOT guess. Verify using these sources in order:
-
-1. **Context7 MCP** (preferred — fastest):
-   - Call `mcp__context7__resolve-library-id` with `"laravel/framework"`
-   - Call `mcp__context7__query-docs` with the resolved ID and your specific question
-
-2. **Official Laravel Docs** (fallback):
-   - Fetch from `https://github.com/laravel/docs` — read the `.md` file matching the current version branch (e.g., `11.x/eloquent.md`)
-
-3. **Related packages**: For Livewire, Pest, Inertia — resolve each via context7 separately
-
-> Never rely on memorized knowledge when context7 or official docs are available.
+**[HARD-GATE]** When uncertain about any Laravel API — verify, don't guess. Use `mcp__context7__resolve-library-id` then `mcp__context7__query-docs` (preferred). Fallback: fetch from `https://github.com/laravel/docs`. For Livewire, Pest, Inertia — resolve each via context7 separately. Returned docs override memorized knowledge.
 
 ### Phase 2: Architecture Review
 

@@ -140,8 +140,8 @@ describe('Installer', () => {
     const content = await fs.readFile(path.join(tmpDir, 'CLAUDE.md'), 'utf8');
     expect(content).toContain('<!-- TOOLKIT START -->');
     expect(content).toContain('<!-- TOOLKIT END -->');
-    expect(content).toContain('HARD-GATES');
-    expect(content).toContain('64 skills');
+    expect(content).toContain('Agent Operating Manual');
+    expect(content).toContain('64 Skills');
   });
 
   it('merges CLAUDE.md with existing content', async () => {
@@ -153,7 +153,7 @@ describe('Installer', () => {
     expect(content).toContain('# My Project');
     expect(content).toContain('Existing content.');
     expect(content).toContain('<!-- TOOLKIT START -->');
-    expect(content).toContain('HARD-GATES');
+    expect(content).toContain('Agent Operating Manual');
   });
 
   it('installs skills with reference docs', async () => {

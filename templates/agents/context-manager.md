@@ -28,11 +28,7 @@ You are a context manager maintaining comprehensive project knowledge.
 
 ## Agent Coordination
 
-When this agent needs to gather specialized context, use the `Agent` tool:
-
-| Need | Dispatch To | How |
-|---|---|---|
-| Codebase exploration | `Agent` tool with `subagent_type="Explore"` | `Agent(description="Explore codebase", subagent_type="Explore", prompt="Find all files matching...")` |
+Dispatch via `Agent` tool with `subagent_type="Explore"` for codebase exploration.
 
 ## Output Format
 - Project context summary (for memory/project-context.md)

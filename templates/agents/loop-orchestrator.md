@@ -72,13 +72,7 @@ Flag these conditions for circuit breaker activation:
 
 ## Agent Coordination
 
-All subagent dispatch uses the `Agent` tool:
-
-| Need | Dispatch To | How |
-|---|---|---|
-| Parallel codebase reads | `Agent` tool with `subagent_type="Explore"` | `Agent(description="Read module X", subagent_type="Explore", prompt="...")` |
-| Code review | `code-reviewer` agent | `Agent(description="Review iteration", prompt="Review changes from this iteration...")` |
-| Spec validation | `spec-reviewer` agent | `Agent(description="Validate specs", prompt="Check implementation against specs...")` |
+Dispatch via `Agent` tool: `subagent_type="Explore"` (codebase reads), `code-reviewer` (iteration review), `spec-reviewer` (spec validation).
 
 ## Output Format
 

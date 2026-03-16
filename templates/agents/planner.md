@@ -49,12 +49,7 @@ When creating an implementation plan, you will:
 
 ## Agent Coordination
 
-When this agent needs input from other specialists, use the `Agent` tool:
-
-| Need | Dispatch To | How |
-|---|---|---|
-| Task breakdown | `task-decomposer` agent | `Agent(description="Decompose tasks", prompt="Break down the following plan into parallelizable tasks...")` |
-| Architecture validation | `architect-reviewer` agent | `Agent(description="Validate architecture", prompt="Review the architectural decisions in this plan...")` |
+Dispatch via `Agent` tool when needing: `task-decomposer` (task breakdown), `architect-reviewer` (architecture validation).
 
 5. **Output Format**:
    ```markdown

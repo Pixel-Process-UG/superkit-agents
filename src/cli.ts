@@ -17,7 +17,7 @@ const program = new Command();
 program
   .name('superkit-agents')
   .description('Set up a complete AI-optimized development environment for Claude Code')
-  .version('1.2.0')
+  .version('1.3.0')
   .option('--all', 'Install everything non-interactively')
   .option('--global', 'Install to ~/.claude/ instead of ./.claude/')
   .option('--plugin', 'Install as a .claude-plugin/ plugin')

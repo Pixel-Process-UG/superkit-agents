@@ -53,11 +53,7 @@ When reviewing:
 
 ## Agent Coordination
 
-When this agent identifies spec compliance concerns, use the `Agent` tool:
-
-| Need | Dispatch To | How |
-|---|---|---|
-| Spec compliance check | `spec-reviewer` agent | `Agent(description="Check spec compliance", prompt="Verify the implementation matches the spec for...")` |
+Dispatch via `Agent` tool when needing: `spec-reviewer` (spec compliance checks).
 
 8. **Output Format:**
    ```

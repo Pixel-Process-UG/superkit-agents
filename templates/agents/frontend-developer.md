@@ -32,13 +32,7 @@ Deliver:
 
 ## Agent Coordination
 
-When this agent needs input from other specialists, use the `Agent` tool:
-
-| Need | Dispatch To | How |
-|---|---|---|
-| Project context | `context-manager` agent | `Agent(description="Get project context", prompt="Provide tech stack and patterns for...")` |
-| Design specs | `ui-ux-designer` agent | `Agent(description="Get design specs", prompt="Provide component design specs for...")` |
-| Code review | `code-reviewer` agent | `Agent(description="Review frontend code", prompt="Review the frontend implementation in...")` |
+Dispatch via `Agent` tool when needing: `context-manager` (project context), `ui-ux-designer` (design specs), `code-reviewer` (code review).
 
 ## Output Format
 - Implementation code with tests
